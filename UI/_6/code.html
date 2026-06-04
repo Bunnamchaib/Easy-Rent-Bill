@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dorm Bill Manager - Payment</title>
+<!-- Google Fonts: Be Vietnam Pro -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from design system -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#eeefff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary-fixed": "#7ffc97",
+                    "on-background": "#191b23",
+                    "tertiary-container": "#996100",
+                    "surface-variant": "#e1e2ed",
+                    "on-secondary-container": "#007230",
+                    "secondary-container": "#7cf994",
+                    "on-surface-variant": "#434655",
+                    "background": "#faf8ff",
+                    "tertiary": "#784b00",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0f0fb",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9d9e5",
+                    "primary-container": "#2563eb",
+                    "on-secondary-fixed-variant": "#005320",
+                    "surface": "#faf8ff",
+                    "secondary-fixed-dim": "#62df7d",
+                    "on-tertiary-container": "#ffeedd",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#b4c5ff",
+                    "inverse-surface": "#2e3039",
+                    "outline": "#737686",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary-fixed": "#00174b",
+                    "surface-container": "#ededf9",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-bright": "#faf8ff",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-high": "#e7e7f3",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#c3c6d7",
+                    "surface-tint": "#0053db",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "surface-container-highest": "#e1e2ed",
+                    "on-surface": "#191b23",
+                    "secondary": "#006e2d",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#004ac6",
+                    "surface-container-low": "#f3f3fe",
+                    "on-secondary-fixed": "#002109"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "container-margin": "16px",
+                    "unit": "4px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "gutter": "16px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "display": ["Be Vietnam Pro", "sans-serif"],
+                    "body-md": ["Be Vietnam Pro", "sans-serif"],
+                    "headline-lg": ["Be Vietnam Pro", "sans-serif"],
+                    "body-lg": ["Be Vietnam Pro", "sans-serif"],
+                    "headline-md": ["Be Vietnam Pro", "sans-serif"],
+                    "label-sm": ["Be Vietnam Pro", "sans-serif"],
+                    "label-md": ["Be Vietnam Pro", "sans-serif"]
+            },
+            "fontSize": {
+                    "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for cleaner UI on mobile */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col items-center">
+<!-- Mobile Device Container for Desktop View -->
+<div class="w-full max-w-md bg-surface min-h-screen flex flex-col relative shadow-2xl sm:border-x border-surface-variant overflow-hidden">
+<!-- Transactional Header (Nav suppressed per rules, custom back header used) -->
+<header class="flex justify-between items-center w-full px-container-margin py-md sticky top-0 z-50 bg-surface">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary font-bold">ชำระเงิน</h1>
+<div class="w-10 h-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 px-container-margin pb-32 overflow-y-auto transition-opacity duration-300" id="main-payment-view">
+<!-- Summary Section -->
+<section class="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-surface-variant mb-lg relative overflow-hidden">
+<!-- Decorative top color bar -->
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">ห้อง 101</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">คุณสมชาย</p>
+</div>
+<div class="bg-primary-container/10 px-3 py-1 rounded-full text-primary font-label-md text-label-md border border-primary-container/20">
+                        รอชำระ
+                    </div>
+</div>
+<div class="mt-md pt-md border-t border-surface-variant border-dashed">
+<p class="font-label-md text-label-md text-on-surface-variant mb-xs">ยอดรวมที่ต้องชำระ</p>
+<p class="font-display text-display text-primary tracking-tight">5,200.00 <span class="font-headline-md text-headline-md text-on-surface-variant font-normal">บาท</span></p>
+</div>
+</section>
+<!-- Payment Method Selector -->
+<section class="mb-lg">
+<p class="font-label-md text-label-md text-on-surface-variant mb-sm">เลือกช่องทางการชำระเงิน</p>
+<div class="flex bg-surface-container-high rounded-lg p-xs">
+<button class="flex-1 flex items-center justify-center py-sm rounded-md font-label-md text-label-md text-on-surface-variant hover:bg-surface-container transition-colors gap-2">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                        เงินสด (Cash)
+                    </button>
+<!-- Active State -->
+<button class="flex-1 flex items-center justify-center py-sm rounded-md font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm ring-1 ring-black/5 gap-2">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+                        โอนผ่าน QR Code
+                    </button>
+</div>
+</section>
+<!-- QR Code View (Active) -->
+<section class="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-surface-variant flex flex-col items-center text-center">
+<!-- Placeholder QR Code Image -->
+<div class="w-48 h-48 bg-surface-container rounded-xl flex items-center justify-center mb-md border border-surface-variant shadow-inner p-2 relative">
+<!-- Faux QR pattern for realism -->
+<div class="w-full h-full bg-white flex flex-wrap gap-1 p-2 opacity-50">
+<div class="w-6 h-6 bg-primary rounded-sm border-2 border-white"></div>
+<div class="w-10 h-2 bg-on-surface rounded-sm"></div>
+<div class="w-6 h-6 bg-primary rounded-sm border-2 border-white absolute top-2 right-2"></div>
+<div class="w-6 h-6 bg-primary rounded-sm border-2 border-white absolute bottom-2 left-2"></div>
+<div class="w-full h-full absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant" style="font-size: 64px;">qr_code_2</span>
+</div>
+</div>
+</div>
+<!-- Bank Details -->
+<div class="w-full bg-surface-container-low rounded-lg p-md mb-md border border-surface-variant">
+<div class="flex items-center justify-center gap-sm mb-xs text-primary">
+<span class="material-symbols-outlined icon-filled">account_balance</span>
+<p class="font-headline-md text-headline-md">กสิกรไทย</p>
+</div>
+<div class="space-y-1 mt-sm">
+<p class="font-body-md text-body-md text-on-surface flex justify-between">
+<span class="text-on-surface-variant">ชื่อบัญชี</span>
+<span class="font-medium">หอพักใจดี</span>
+</p>
+<p class="font-body-md text-body-md text-on-surface flex justify-between">
+<span class="text-on-surface-variant">เลขบัญชี</span>
+<span class="font-medium">012-3-45678-9</span>
+</p>
+<p class="font-body-md text-body-md text-on-surface flex justify-between pt-xs border-t border-surface-variant border-dashed mt-xs">
+<span class="text-on-surface-variant">พร้อมเพย์</span>
+<span class="font-medium text-primary">0812345678</span>
+</p>
+</div>
+</div>
+<!-- Upload Actions -->
+<div class="flex flex-col sm:flex-row gap-sm w-full">
+<button class="flex-1 h-12 rounded-lg border border-primary text-primary hover:bg-primary-container/10 flex items-center justify-center font-label-md text-label-md gap-xs transition-colors">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+                        แนบหลักฐานการโอน
+                    </button>
+<button class="flex-1 h-12 rounded-lg border border-primary text-primary hover:bg-primary-container/10 flex items-center justify-center font-label-md text-label-md gap-xs transition-colors">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                        ถ่ายรูปสลิป
+                    </button>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed sm:absolute bottom-0 left-0 w-full p-container-margin bg-surface/90 backdrop-blur-md border-t border-surface-variant shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] z-20" id="action-bar">
+<button class="w-full h-12 bg-primary text-on-primary rounded-lg font-headline-md text-body-md font-medium flex items-center justify-center hover:bg-primary/90 active:scale-[0.98] transition-all shadow-md" onclick="showSuccessState()">
+                ยืนยันการชำระเงิน
+            </button>
+</div>
+<!-- Success State Preview (Hidden initially) -->
+<div class="absolute inset-0 bg-surface z-50 flex flex-col items-center justify-center px-container-margin opacity-0 pointer-events-none transition-opacity duration-500" id="success-view">
+<div class="w-24 h-24 bg-secondary-container rounded-full flex items-center justify-center mb-lg shadow-[0px_12px_24px_rgba(0,0,0,0.1)] scale-50 transition-transform duration-500 ease-out" id="success-icon-container">
+<span class="material-symbols-outlined text-secondary-fixed-dim icon-filled" style="font-size: 56px;">check_circle</span>
+</div>
+<h2 class="font-display text-display text-on-surface mb-xs text-center">ชำระเงินสำเร็จ</h2>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mb-xl">ระบบได้รับข้อมูลการชำระเงินของ ห้อง 101 เรียบร้อยแล้ว</p>
+<button class="w-full max-w-[200px] h-12 bg-surface-container-high text-primary rounded-lg font-label-md text-label-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-outline-variant" onclick="resetView()">
+                กลับหน้าหลัก
+            </button>
+</div>
+</div>
+<script>
+        function showSuccessState() {
+            // Hide main content
+            document.getElementById('main-payment-view').classList.add('opacity-0');
+            document.getElementById('action-bar').classList.add('translate-y-full', 'opacity-0');
+            
+            // Show success view
+            const successView = document.getElementById('success-view');
+            successView.classList.remove('opacity-0', 'pointer-events-none');
+            
+            // Animate icon pop
+            setTimeout(() => {
+                document.getElementById('success-icon-container').classList.remove('scale-50');
+                document.getElementById('success-icon-container').classList.add('scale-100');
+            }, 100);
+        }
+
+        function resetView() {
+            // Reset to initial state for demo purposes
+            document.getElementById('main-payment-view').classList.remove('opacity-0');
+            document.getElementById('action-bar').classList.remove('translate-y-full', 'opacity-0');
+            
+            const successView = document.getElementById('success-view');
+            successView.classList.add('opacity-0', 'pointer-events-none');
+            
+            document.getElementById('success-icon-container').classList.add('scale-50');
+            document.getElementById('success-icon-container').classList.remove('scale-100');
+        }
+    </script>
+</body></html>
