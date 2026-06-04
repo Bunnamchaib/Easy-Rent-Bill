@@ -1,0 +1,3062 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Rent Bill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Material+Symbols+Outlined:FILL@0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f7ff;
+      --panel: #ffffff;
+      --panel-soft: #eef2ff;
+      --panel-line: #d9e0f1;
+      --text: #161c2f;
+      --muted: #65708b;
+      --primary: #1d57d8;
+      --primary-strong: #0f43b5;
+      --green: #72ef95;
+      --green-text: #0e6d33;
+      --red-soft: #ffe5e1;
+      --red: #d82727;
+      --orange: #c28111;
+      --gray-chip: #ebedf4;
+      --shadow: 0 10px 30px rgba(19, 43, 98, 0.08);
+      --radius: 22px;
+      --radius-sm: 16px;
+      --sidebar: 280px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(29, 87, 216, 0.08), transparent 25%),
+        linear-gradient(180deg, #fafbff 0%, #f2f5ff 100%);
+      color: var(--text);
+      font-family: "Be Vietnam Pro", sans-serif;
+    }
+
+    body {
+      padding-bottom: 88px;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0;
+      vertical-align: middle;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(250, 251, 255, 0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(217, 224, 241, 0.85);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2f74ff, #0d46bf);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .shell-body {
+      display: block;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .sidebar {
+      display: none;
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .page-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    .subtle {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 0.97rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(29, 87, 216, 0.26);
+    }
+
+    .btn-secondary {
+      background: var(--panel-soft);
+      color: var(--primary);
+      border: 1px solid var(--panel-line);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--panel-line);
+    }
+
+    .btn-danger {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+    }
+
+    .stats-grid,
+    .quick-grid,
+    .cards-grid,
+    .settings-grid,
+    .room-grid,
+    .invoice-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      padding: 18px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: clamp(1.7rem, 5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-foot {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .quick-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .quick-card {
+      padding: 18px;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quick-card.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: #fff;
+    }
+
+    .quick-card .icon {
+      font-size: 1.7rem;
+    }
+
+    .quick-card .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .split {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel-block {
+      padding: 18px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      border: 1px solid var(--panel-line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .chip-row,
+    .filter-row,
+    .segmented,
+    .room-switcher {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip,
+    .segment-btn,
+    .room-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--panel-line);
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .chip.active,
+    .segment-btn.active,
+    .room-pill.active {
+      background: var(--green);
+      color: #0c3f21;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .room-pill.current {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba(29, 87, 216, 0.24);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-grid.cols-2 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    label.field {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--panel-line);
+      background: #fff;
+      color: var(--text);
+      padding: 14px 16px;
+      outline: none;
+      min-height: 52px;
+    }
+
+    .field textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29, 87, 216, 0.12);
+    }
+
+    .helper {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--panel-line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid #edf1fa;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: #f9fbff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--gray-chip);
+      color: #47506a;
+    }
+
+    .badge.occupied,
+    .badge.paid {
+      background: rgba(114, 239, 149, 0.22);
+      color: var(--green-text);
+    }
+
+    .badge.vacant {
+      background: #eef1f7;
+      color: #5d6478;
+    }
+
+    .badge.maintenance {
+      background: rgba(194, 129, 17, 0.16);
+      color: #8a5a09;
+    }
+
+    .badge.disabled,
+    .badge.cancelled {
+      background: #d7dbe7;
+      color: #47506a;
+    }
+
+    .badge.unpaid {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .money {
+      font-weight: 800;
+    }
+
+    .danger-box,
+    .success-box,
+    .info-box {
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+    }
+
+    .danger-box {
+      background: #fff3f2;
+      border: 1px solid #ffd1cb;
+      color: var(--red);
+    }
+
+    .success-box {
+      background: #ecfff1;
+      border: 1px solid #b9efc6;
+      color: var(--green-text);
+    }
+
+    .info-box {
+      background: #f1f6ff;
+      border: 1px solid #cfddfb;
+      color: var(--primary-strong);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5eaf8;
+      overflow: hidden;
+    }
+
+    .progress-bar > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #1d57d8, #6aa4ff);
+      border-radius: inherit;
+    }
+
+    .metric-card {
+      padding: 22px;
+    }
+
+    .metric-row {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .meter-box {
+      border: 1px solid var(--panel-line);
+      border-radius: 22px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .meter-value {
+      min-height: 86px;
+      font-size: clamp(2.1rem, 8vw, 4rem);
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .meter-value.invalid {
+      border-color: var(--red);
+      color: var(--red);
+      background: #fff8f7;
+    }
+
+    .footer-nav {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(217, 224, 241, 0.95);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-btn {
+      min-height: 62px;
+      border-radius: 18px;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      font-size: 0.76rem;
+      padding: 6px;
+    }
+
+    .nav-btn.active {
+      background: var(--green);
+      color: #16381f;
+      font-weight: 700;
+    }
+
+    .nav-btn .material-symbols-outlined {
+      font-size: 1.5rem;
+    }
+
+    .empty-state {
+      padding: 28px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .fab {
+      position: fixed;
+      right: 20px;
+      bottom: 106px;
+      z-index: 35;
+      width: 64px;
+      height: 64px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(29, 87, 216, 0.32);
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .modal-root {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 18, 34, 0.52);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -48%);
+      width: min(720px, calc(100vw - 24px));
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      background: #fff;
+      border-radius: 28px;
+      border: 1px solid var(--panel-line);
+      box-shadow: 0 18px 46px rgba(14, 32, 66, 0.2);
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .modal-root.active {
+      pointer-events: auto;
+    }
+
+    .modal-root.active .modal-backdrop,
+    .modal-root.active .modal-card {
+      opacity: 1;
+    }
+
+    .modal-root.active .modal-card {
+      transform: translate(-50%, -50%);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .close-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: var(--panel-soft);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+    }
+
+    .toast-root {
+      position: fixed;
+      right: 16px;
+      top: 16px;
+      z-index: 90;
+      display: grid;
+      gap: 10px;
+    }
+
+    .toast {
+      min-width: 280px;
+      max-width: min(420px, calc(100vw - 32px));
+      padding: 14px 16px;
+      border-radius: 18px;
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(11, 18, 32, 0.18);
+      animation: slide-in 0.22s ease;
+    }
+
+    .toast.success { background: #1c9950; }
+    .toast.error { background: #d82727; }
+    .toast.info { background: #1d57d8; }
+
+    @keyframes slide-in {
+      from { transform: translateY(-8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .loader {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .loader::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(29, 87, 216, 0.2);
+      border-top-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      background:
+        radial-gradient(circle at top left, rgba(114, 239, 149, 0.18), transparent 30%),
+        linear-gradient(180deg, #eef4ff 0%, #f7f9ff 100%);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(460px, 100%);
+      padding: 28px;
+    }
+
+    .login-logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      color: #fff;
+      font-size: 2rem;
+      margin-bottom: 18px;
+      box-shadow: 0 16px 30px rgba(29, 87, 216, 0.24);
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed #e5eaf6;
+    }
+
+    .slip-preview {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 20px;
+      border: 1px solid var(--panel-line);
+      background: #f7f9ff;
+    }
+
+    .sticky-actions {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.92) 24%, rgba(255,255,255,1) 100%);
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    @media (min-width: 820px) {
+      body {
+        padding-bottom: 0;
+      }
+
+      .shell-body {
+        display: grid;
+        grid-template-columns: var(--sidebar) minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .sidebar {
+        display: block;
+        position: sticky;
+        top: 88px;
+        align-self: start;
+      }
+
+      .sidebar .panel {
+        padding: 18px;
+      }
+
+      .side-nav {
+        display: grid;
+        gap: 8px;
+      }
+
+      .side-btn {
+        min-height: 54px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted);
+        background: transparent;
+      }
+
+      .side-btn.active {
+        background: var(--green);
+        color: #16381f;
+        font-weight: 700;
+      }
+
+      .footer-nav,
+      .fab.mobile-only {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .split {
+        grid-template-columns: 1.2fr 1fr;
+      }
+
+      .cards-grid,
+      .invoice-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .room-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid.cols-2,
+      .metric-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginRoot"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">
+          <span class="material-symbols-outlined">apartment</span>
+        </div>
+        <div>
+          <div>Easy Rent Bill</div>
+          <div id="headerMode" class="helper">โหมดตัวอย่าง</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="headerMonthBtn" type="button"></button>
+        <button class="btn btn-outline" id="headerRefreshBtn" type="button">
+          <span class="material-symbols-outlined">refresh</span>
+          รีเฟรช
+        </button>
+      </div>
+    </header>
+
+    <div class="shell-body">
+      <aside class="sidebar">
+        <div class="panel">
+          <div class="subtle" style="margin-top:0; margin-bottom:12px;">เมนูหลัก</div>
+          <nav class="side-nav" id="sideNav"></nav>
+          <div class="info-box" style="margin-top:16px;">
+            วาง Apps Script URL ที่หน้า "ตั้งค่า" ได้ที่ช่อง
+            <strong>** วาง APP URL ตรงนี้ **</strong>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main" id="pageRoot"></main>
+    </div>
+  </div>
+
+  <button id="fabButton" class="fab mobile-only" type="button" hidden>
+    <span class="material-symbols-outlined">add</span>
+  </button>
+
+  <nav class="footer-nav" id="bottomNav"></nav>
+
+  <div id="modalRoot" class="modal-root"></div>
+  <div id="toastRoot" class="toast-root"></div>
+
+  <script>
+    const APP_URL_PLACEHOLDER = "** วาง APP URL ตรงนี้ **";
+    const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvVeazqlo-xx5jgqgvAaRyoWWzXe7pWcpJq4HvQfM4eIAoLzZhlPhWYCGKlVrg1Ll2/exec";
+    const LEGACY_SCRIPT_URLS = new Set([
+      "https://script.google.com/macros/s/AKfycbwK540n1az6p4SABtMdCadf5dTdl5vtBTe3ahwWSZfQmppkpTVvHRgiLHFNDCYuyqtm/exec",
+      "https://script.google.com/macros/s/AKfycbz9IXA9xl6HmtaHCT7anp-tIni8RcP2556iF6DyeFkDBxwzg5y9s7xTF5_2Eo-pyVRH/exec",
+      "https://script.google.com/macros/s/AKfycbwe_HJ4sr53rApoJnySiSMz3REt4f3ocrr4fIz_h5OfMQClsXqLehZ6iaP8QQeQ4WTo/exec",
+      "https://script.google.com/macros/s/AKfycbyPSr2jP2dGQY4aux5SVoXDHIh5zvTogSDlDDaEhFa_P1HX5rZseHNAzBi6YRymOPPV/exec"
+    ]);
+    const STORAGE_KEYS = {
+      page: "ERB_ACTIVE_PAGE",
+      scriptUrl: "ERB_SCRIPT_URL",
+      auth: "ERB_AUTH"
+    };
+    const storedScriptUrl = localStorage.getItem(STORAGE_KEYS.scriptUrl);
+    const initialScriptUrl = !storedScriptUrl || storedScriptUrl === APP_URL_PLACEHOLDER || LEGACY_SCRIPT_URLS.has(storedScriptUrl)
+      ? DEFAULT_SCRIPT_URL
+      : storedScriptUrl;
+
+    const PAGE_META = [
+      { id: "dashboard", label: "หน้าหลัก", icon: "grid_view" },
+      { id: "rooms", label: "ห้องพัก", icon: "home_work" },
+      { id: "meters", label: "จดมิเตอร์", icon: "speed" },
+      { id: "invoices", label: "ใบแจ้งหนี้", icon: "receipt_long" },
+      { id: "settings", label: "ตั้งค่า", icon: "settings" }
+    ];
+
+    const state = {
+      page: localStorage.getItem(STORAGE_KEYS.page) || "dashboard",
+      scriptUrl: initialScriptUrl,
+      auth: readJson(STORAGE_KEYS.auth, null),
+      loading: false,
+      settings: {},
+      summary: {},
+      logs: [],
+      rooms: { items: [], total: 0, page: 1, pageSize: 20, query: "", status: "all" },
+      roomDetail: null,
+      invoices: { items: [], total: 0, page: 1, pageSize: 20, month: currentMonth(), status: "all", query: "" },
+      meter: {
+        month: currentMonth(),
+        mode: "all",
+        roomId: "",
+        rooms: [],
+        previous: null,
+        progress: { done: 0, total: 0, percent: 0 }
+      }
+    };
+
+    const mockDb = createMockDatabase();
+
+    document.addEventListener("DOMContentLoaded", boot);
+
+    async function boot() {
+      bindGlobalEvents();
+      renderShell();
+      await ensureLogin();
+      await loadPage(state.page);
+    }
+
+    function bindGlobalEvents() {
+      window.addEventListener("hashchange", () => {
+        const hash = location.hash.replace("#/", "");
+        if (PAGE_META.some((page) => page.id === hash)) {
+          state.page = hash;
+          localStorage.setItem(STORAGE_KEYS.page, hash);
+          renderShell();
+          loadPage(hash);
+        }
+      });
+
+      document.getElementById("headerRefreshBtn").addEventListener("click", () => loadPage(state.page, true));
+      document.getElementById("headerMonthBtn").addEventListener("click", () => {
+        if (state.page === "meters") {
+          changeMonth("meter");
+        } else if (state.page === "invoices") {
+          changeMonth("invoice");
+        } else {
+          openMonthQuickJump();
+        }
+      });
+
+      document.getElementById("fabButton").addEventListener("click", () => {
+        if (state.page === "rooms") {
+          openRoomModal();
+        } else if (state.page === "invoices") {
+          handleGenerateInvoices();
+        } else if (state.page === "meters") {
+          saveMeter(true);
+        }
+      });
+    }
+
+    function renderShell() {
+      const activePage = PAGE_META.find((item) => item.id === state.page) || PAGE_META[0];
+      location.hash = "#/" + activePage.id;
+      document.getElementById("sideNav").innerHTML = PAGE_META.map((item) => `
+        <button class="side-btn ${item.id === activePage.id ? "active" : ""}" type="button" onclick="goPage('${item.id}')">
+          <span class="material-symbols-outlined">${item.icon}</span>
+          <span>${item.label}</span>
+        </button>
+      `).join("");
+      document.getElementById("bottomNav").innerHTML = PAGE_META.map((item) => `
+        <button class="nav-btn ${item.id === activePage.id ? "active" : ""}" type="button" onclick="goPage('${item.id}')">
+          <span class="material-symbols-outlined">${item.icon}</span>
+          <span>${item.label}</span>
+        </button>
+      `).join("");
+      document.getElementById("headerMode").textContent = isMockMode()
+        ? "โหมดตัวอย่าง - ยังไม่เชื่อม Apps Script"
+        : "เชื่อม Google Sheets แล้ว";
+      document.getElementById("headerMonthBtn").innerHTML = `
+        <span class="material-symbols-outlined">calendar_month</span>
+        ${formatThaiMonth(state.page === "meters" ? state.meter.month : state.invoices.month)}
+      `;
+
+      const fab = document.getElementById("fabButton");
+      fab.hidden = !["rooms", "meters", "invoices"].includes(state.page);
+      fab.innerHTML = state.page === "rooms"
+        ? '<span class="material-symbols-outlined">add</span>'
+        : state.page === "invoices"
+          ? '<span class="material-symbols-outlined">autorenew</span>'
+          : '<span class="material-symbols-outlined">save</span>';
+    }
+
+    async function ensureLogin() {
+      if (!state.auth) {
+        renderLogin();
+        return new Promise((resolve) => {
+          window.__loginResolved = resolve;
+        });
+      }
+      try {
+        await api("LOGIN", { username: state.auth.username, password: state.auth.password }, { silent: true, anonymous: true });
+      } catch (error) {
+        state.auth = null;
+        localStorage.removeItem(STORAGE_KEYS.auth);
+        renderLogin(error.message || "เข้าสู่ระบบใหม่อีกครั้ง");
+        return new Promise((resolve) => {
+          window.__loginResolved = resolve;
+        });
+      }
+    }
+
+    function renderLogin(message = "") {
+      const root = document.getElementById("loginRoot");
+      root.innerHTML = `
+        <section class="login-screen">
+          <div class="panel login-card">
+            <div class="login-logo"><span class="material-symbols-outlined">apartment</span></div>
+            <h1 class="page-title" style="font-size:2rem; margin:0 0 10px;">เข้าสู่ระบบ Easy Rent Bill</h1>
+            <div class="subtle" style="margin-top:0; margin-bottom:20px;">
+              ใช้ user และ password สำหรับเข้าถึงข้อมูลใน Google Sheets
+            </div>
+            ${message ? `<div class="danger-box" style="margin-bottom:16px;">${escapeHtml(message)}</div>` : ""}
+            <form id="loginForm" class="form-grid">
+              <label class="field">
+                <span>ชื่อผู้ใช้</span>
+                <input name="username" value="${escapeHtml(state.auth?.username || "admin")}" required>
+              </label>
+              <label class="field">
+                <span>รหัสผ่าน</span>
+                <input name="password" type="password" value="${escapeHtml(state.auth?.password || "admin1234")}" required>
+              </label>
+              <button class="btn btn-primary" type="submit">
+                <span class="material-symbols-outlined">login</span>
+                เข้าระบบ
+              </button>
+            </form>
+            <div class="info-box" style="margin-top:16px;">
+              ค่าเริ่มต้นในข้อมูลทดสอบ: <strong>admin / admin1234</strong>
+            </div>
+          </div>
+        </section>
+      `;
+
+      document.getElementById("loginForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const username = String(form.get("username") || "").trim();
+        const password = String(form.get("password") || "").trim();
+        try {
+          await api("LOGIN", { username, password }, { anonymous: true });
+          state.auth = { username, password };
+          localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify(state.auth));
+          root.innerHTML = "";
+          if (window.__loginResolved) {
+            window.__loginResolved();
+            window.__loginResolved = null;
+          }
+        } catch (error) {
+          renderLogin(error.message || "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        }
+      };
+    }
+
+    async function loadPage(page, force = false) {
+      state.page = page;
+      renderShell();
+      setLoading(true);
+      try {
+        if (page === "dashboard" || force) {
+          await loadDashboard();
+        }
+        if (page === "rooms" || force) {
+          await loadRooms();
+        }
+        if (page === "meters" || force) {
+          await loadMeters();
+        }
+        if (page === "invoices" || force) {
+          await loadInvoices();
+        }
+        if (page === "settings" || force) {
+          await loadSettings();
+        }
+        renderPage();
+      } catch (error) {
+        showToast(error.message || "โหลดข้อมูลไม่สำเร็จ", "error");
+        renderPage(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadDashboard() {
+      const [summary, logs, invoices] = await Promise.all([
+        api("GET_DASHBOARD_SUMMARY", { month: state.invoices.month }),
+        api("GET_LOGS", { limit: 10 }),
+        api("GET_INVOICES", { month: state.invoices.month, status: "unpaid", page: 1, pageSize: 6 })
+      ]);
+      state.summary = summary;
+      state.logs = logs.items || logs;
+      state.dashboardInvoices = invoices.items || [];
+    }
+
+    async function loadRooms() {
+      const rooms = await api("GET_ROOMS", {
+        page: state.rooms.page,
+        pageSize: state.rooms.pageSize,
+        query: state.rooms.query,
+        status: state.rooms.status
+      });
+      state.rooms = { ...state.rooms, ...rooms };
+    }
+
+    async function loadMeters() {
+      const meterData = await api("GET_METER_PROGRESS", { billingMonth: state.meter.month });
+      state.meter.rooms = meterData.rooms || [];
+      state.meter.progress = {
+        done: meterData.done || 0,
+        total: meterData.total || 0,
+        percent: meterData.percent || 0
+      };
+      if (!state.meter.roomId && state.meter.rooms[0]) {
+        state.meter.roomId = state.meter.rooms[0].room_id;
+      }
+      if (state.meter.roomId) {
+        state.meter.previous = await api("GET_PREVIOUS_METER", {
+          billingMonth: state.meter.month,
+          roomId: state.meter.roomId
+        });
+      }
+    }
+
+    async function loadInvoices() {
+      const invoices = await api("GET_INVOICES", {
+        month: state.invoices.month,
+        status: state.invoices.status,
+        query: state.invoices.query,
+        page: state.invoices.page,
+        pageSize: state.invoices.pageSize
+      });
+      state.invoices = { ...state.invoices, ...invoices };
+    }
+
+    async function loadSettings() {
+      state.settings = await api("GET_SETTINGS");
+    }
+
+    function renderPage(error = null) {
+      const root = document.getElementById("pageRoot");
+      if (state.loading) {
+        root.innerHTML = `
+          <div class="panel panel-block">
+            <div class="loader">กำลังโหลดข้อมูล...</div>
+          </div>
+        `;
+        return;
+      }
+      if (error) {
+        root.innerHTML = `
+          <div class="panel panel-block">
+            <div class="danger-box">${escapeHtml(error.message || "มีปัญหาในการโหลดข้อมูล")}</div>
+          </div>
+        `;
+        return;
+      }
+
+      const renderers = {
+        dashboard: renderDashboard,
+        rooms: renderRooms,
+        meters: renderMeters,
+        invoices: renderInvoices,
+        settings: renderSettings
+      };
+      root.innerHTML = renderers[state.page]();
+    }
+
+    function renderDashboard() {
+      const s = state.summary || {};
+      return `
+        <section class="page-head">
+          <div>
+            <h1 class="page-title">แดชบอร์ด</h1>
+            <div class="subtle">สรุปรายรับ สถานะห้อง และรายการค้างชำระของเดือน ${formatThaiMonth(state.invoices.month)}</div>
+          </div>
+        </section>
+
+        <section class="stats-grid">
+          ${summaryCard("รายรับทั้งหมด (เดือนนี้)", money(s.total_revenue || 0), "รวมบิลทั้งหมด")}
+          ${summaryCard("รับชำระแล้ว", money(s.received_amount || 0), "ยอดเงินที่รับเข้าระบบ")}
+          ${summaryCard("ยอดค้างชำระ", money(s.outstanding_amount || 0), "บิลที่ยังไม่ได้ปิด", "color:var(--red);")}
+          ${summaryCard("ห้องทั้งหมด", numberText(s.total_rooms || 0), `มีผู้เช่า ${numberText(s.occupied_rooms || 0)} ห้อง`)}
+        </section>
+
+        <section class="quick-grid">
+          ${quickCard("primary", "speed", "จดมิเตอร์", "บันทึกมิเตอร์ค่าน้ำและค่าไฟอย่างรวดเร็ว", "goPage('meters')")}
+          ${quickCard("", "receipt_long", "ออกใบแจ้งหนี้", "สร้างหรืออัปเดตบิลประจำเดือน", "handleGenerateInvoices()")}
+          ${quickCard("", "warning", "ดูยอดค้างชำระ", "เปิดรายการห้องที่ยังไม่ชำระ", "goPage('invoices'); setInvoiceStatus('unpaid')")}
+          ${quickCard("", "add_home", "เพิ่มห้องพัก", "สร้างข้อมูลห้องและผู้เช่าใหม่", "goPage('rooms'); openRoomModal()")}
+        </section>
+
+        <section class="split">
+          <div class="panel panel-block">
+            <div class="panel-title">
+              <h3>ห้องที่ค้างชำระ</h3>
+              <button class="btn btn-ghost" type="button" onclick="goPage('invoices')">ดูทั้งหมด</button>
+            </div>
+            <div class="list">
+              ${state.dashboardInvoices.length ? state.dashboardInvoices.map(invoiceCard).join("") : emptyState("ไม่มีบิลค้างชำระ")}
+            </div>
+          </div>
+          <div class="panel panel-block">
+            <div class="panel-title">
+              <h3>กิจกรรมล่าสุด</h3>
+            </div>
+            <div class="list">
+              ${state.logs.length ? state.logs.map(logCard).join("") : emptyState("ยังไม่มีกิจกรรม")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderRooms() {
+      return `
+        <section class="page-head">
+          <div>
+            <h1 class="page-title">จัดการห้องพัก</h1>
+            <div class="subtle">ค้นหา กรอง และแก้ไขข้อมูลห้องพักทั้งหมด ${numberText(state.rooms.total || 0)} ห้อง</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" onclick="openRoomModal()">
+              <span class="material-symbols-outlined">add</span>
+              เพิ่มห้องพัก
+            </button>
+          </div>
+        </section>
+
+        <section class="panel panel-block" style="margin-bottom:20px;">
+          <div class="form-grid cols-2">
+            <label class="field">
+              <span>ค้นหาห้องหรือชื่อผู้เช่า</span>
+              <input id="roomSearchInput" value="${escapeHtml(state.rooms.query)}" placeholder="เช่น 101 หรือ สมชาย">
+            </label>
+            <label class="field">
+              <span>สถานะห้อง</span>
+              <select id="roomStatusFilter">
+                ${["all", "occupied", "vacant", "maintenance", "disabled"].map((status) => `
+                  <option value="${status}" ${status === state.rooms.status ? "selected" : ""}>${roomStatusLabel(status)}</option>
+                `).join("")}
+              </select>
+            </label>
+          </div>
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn btn-secondary" type="button" onclick="applyRoomFilters()">ค้นหา</button>
+            <button class="btn btn-outline" type="button" onclick="resetRoomFilters()">ล้างตัวกรอง</button>
+          </div>
+        </section>
+
+        <section class="room-grid" style="margin-bottom:20px;">
+          ${(state.rooms.items || []).map(roomMobileCard).join("") || emptyState("ยังไม่มีข้อมูลห้องพัก")}
+        </section>
+
+        <section class="panel panel-block">
+          <div class="panel-title">
+            <h3>ตารางห้องพัก</h3>
+            <div class="subtle" style="margin:0;">หน้า ${numberText(state.rooms.page || 1)}</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ห้อง</th>
+                  <th>ชั้น</th>
+                  <th>ผู้เช่า</th>
+                  <th>โทรศัพท์</th>
+                  <th>ค่าเช่า</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(state.rooms.items || []).map(roomTableRow).join("") || `<tr><td colspan="7">${emptyState("ยังไม่มีข้อมูล")}</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+          ${pager(state.rooms.page, state.rooms.totalPages, "changeRoomPage")}
+        </section>
+      `;
+    }
+
+    function renderMeters() {
+      const selectedRoom = state.meter.rooms.find((room) => room.room_id === state.meter.roomId);
+      const prev = state.meter.previous || {};
+      const waterPrev = numberOrZero(prev.water_prev);
+      const electricPrev = numberOrZero(prev.electric_prev);
+      const waterCurrent = prev.water_current ?? "";
+      const electricCurrent = prev.electric_current ?? "";
+      const waterUnits = Math.max(0, Number(waterCurrent || 0) - waterPrev);
+      const electricUnits = Math.max(0, Number(electricCurrent || 0) - electricPrev);
+      const waterRate = Number(prev.water_rate || state.settings.water_rate || 18);
+      const electricRate = Number(prev.electric_rate || state.settings.electric_rate || 8);
+      const waterAmount = waterUnits * waterRate;
+      const electricAmount = electricUnits * electricRate;
+      const waterInvalid = waterCurrent !== "" && Number(waterCurrent) < waterPrev;
+      const electricInvalid = electricCurrent !== "" && Number(electricCurrent) < electricPrev;
+
+      return `
+        <section class="page-head">
+          <div>
+            <h1 class="page-title">จดมิเตอร์</h1>
+            <div class="subtle">${formatThaiMonth(state.meter.month)} บันทึกแล้ว ${numberText(state.meter.progress.done)} / ${numberText(state.meter.progress.total)} ห้อง</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" onclick="changeMonth('meter')">
+              <span class="material-symbols-outlined">calendar_month</span>
+              เปลี่ยนเดือน
+            </button>
+          </div>
+        </section>
+
+        <section class="panel panel-block" style="margin-bottom:20px;">
+          <div class="progress-bar"><span style="width:${state.meter.progress.percent || 0}%"></span></div>
+          <div class="subtle">โหมดการบันทึก</div>
+          <div class="segmented" style="margin-top:12px;">
+            ${[
+              ["water", "น้ำ"],
+              ["electric", "ไฟ"],
+              ["all", "ทั้งหมด"]
+            ].map(([value, label]) => `
+              <button class="segment-btn ${state.meter.mode === value ? "active" : ""}" type="button" onclick="setMeterMode('${value}')">${label}</button>
+            `).join("")}
+          </div>
+          <div class="subtle" style="margin-top:18px;">เลือกห้อง</div>
+          <div class="room-switcher" style="margin-top:10px;">
+            ${(state.meter.rooms || []).map((room) => `
+              <button
+                class="room-pill ${room.room_id === state.meter.roomId ? "current" : ""}"
+                type="button"
+                onclick="selectMeterRoom('${room.room_id}')"
+              >
+                ${escapeHtml(room.room_no)}
+              </button>
+            `).join("")}
+          </div>
+        </section>
+
+        <section class="panel metric-card">
+          <div class="panel-title">
+            <h3>${selectedRoom ? `ห้อง ${escapeHtml(selectedRoom.room_no)}` : "ยังไม่มีห้องให้บันทึก"}</h3>
+            <div class="badge ${selectedRoom?.status || "vacant"}">${roomStatusLabel(selectedRoom?.status || "vacant")}</div>
+          </div>
+          ${selectedRoom ? `
+            <div class="metric-row">
+              ${state.meter.mode !== "electric" ? `
+                <div class="meter-box">
+                  <div class="panel-title">
+                    <h3>มิเตอร์น้ำ</h3>
+                    <div class="subtle" style="margin:0;">ครั้งก่อน: ${numberText(waterPrev)}</div>
+                  </div>
+                  <input
+                    id="waterCurrentInput"
+                    class="field meter-value ${waterInvalid ? "invalid" : ""}"
+                    type="number"
+                    value="${escapeHtml(String(waterCurrent))}"
+                    placeholder="0"
+                    oninput="updateMeterPreview()"
+                  >
+                  <div id="waterPreview" class="${waterInvalid ? "danger-box" : "success-box"}" style="margin-top:14px;">
+                    ${waterInvalid
+                      ? "เลขมิเตอร์น้ำปัจจุบันน้อยกว่าครั้งก่อน กรุณาตรวจสอบ"
+                      : `หน่วยที่ใช้ ${numberText(waterUnits)} หน่วย | ยอดรวม ${money(waterAmount)}`}
+                  </div>
+                </div>
+              ` : ""}
+              ${state.meter.mode !== "water" ? `
+                <div class="meter-box">
+                  <div class="panel-title">
+                    <h3>มิเตอร์ไฟ</h3>
+                    <div class="subtle" style="margin:0;">ครั้งก่อน: ${numberText(electricPrev)}</div>
+                  </div>
+                  <input
+                    id="electricCurrentInput"
+                    class="field meter-value ${electricInvalid ? "invalid" : ""}"
+                    type="number"
+                    value="${escapeHtml(String(electricCurrent))}"
+                    placeholder="0"
+                    oninput="updateMeterPreview()"
+                  >
+                  <div id="electricPreview" class="${electricInvalid ? "danger-box" : "success-box"}" style="margin-top:14px;">
+                    ${electricInvalid
+                      ? "เลขมิเตอร์ไฟปัจจุบันน้อยกว่าครั้งก่อน กรุณาตรวจสอบ"
+                      : `หน่วยที่ใช้ ${numberText(electricUnits)} หน่วย | ยอดรวม ${money(electricAmount)}`}
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+            <div class="sticky-actions">
+              <div class="actions">
+                <button class="btn btn-primary" type="button" onclick="saveMeter(true)">
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                  บันทึกและห้องถัดไป
+                </button>
+                <button class="btn btn-secondary" type="button" onclick="saveMeter(false)">บันทึกอย่างเดียว</button>
+              </div>
+            </div>
+          ` : emptyState("ยังไม่มีห้องในสถานะพร้อมใช้งาน")}
+        </section>
+      `;
+    }
+
+    function renderInvoices() {
+      return `
+        <section class="page-head">
+          <div>
+            <h1 class="page-title">ใบแจ้งหนี้</h1>
+            <div class="subtle">สร้าง ดู และรับชำระเงินของบิลประจำเดือน ${formatThaiMonth(state.invoices.month)}</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" onclick="handleGenerateInvoices()">
+              <span class="material-symbols-outlined">autorenew</span>
+              ออกใบแจ้งหนี้อัตโนมัติ
+            </button>
+          </div>
+        </section>
+
+        <section class="panel panel-block" style="margin-bottom:20px;">
+          <div class="form-grid cols-2">
+            <label class="field">
+              <span>เดือนบิล</span>
+              <input id="invoiceMonthInput" type="month" value="${escapeHtml(state.invoices.month)}">
+            </label>
+            <label class="field">
+              <span>ค้นหา</span>
+              <input id="invoiceSearchInput" value="${escapeHtml(state.invoices.query)}" placeholder="ค้นหาห้อง / ชื่อผู้เช่า / เลขบิล">
+            </label>
+          </div>
+          <div class="filter-row" style="margin-top:14px;">
+            ${["all", "unpaid", "paid", "cancelled"].map((status) => `
+              <button class="chip ${state.invoices.status === status ? "active" : ""}" type="button" onclick="setInvoiceStatus('${status}')">
+                ${invoiceStatusLabel(status)}
+              </button>
+            `).join("")}
+          </div>
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn btn-secondary" type="button" onclick="applyInvoiceFilters()">ค้นหา</button>
+            <button class="btn btn-outline" type="button" onclick="exportInvoicesCsv()">Export CSV</button>
+            <button class="btn btn-outline" type="button" onclick="downloadBackupJson()">Export JSON</button>
+          </div>
+        </section>
+
+        <section class="invoice-grid">
+          ${(state.invoices.items || []).map(invoiceCard).join("") || emptyState("ยังไม่มีใบแจ้งหนี้")}
+        </section>
+
+        <section class="panel panel-block" style="margin-top:20px;">
+          <div class="panel-title">
+            <h3>ตารางใบแจ้งหนี้</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice No</th>
+                  <th>ห้อง</th>
+                  <th>ผู้เช่า</th>
+                  <th>เดือน</th>
+                  <th>ยอดรวม</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(state.invoices.items || []).map(invoiceTableRow).join("") || `<tr><td colspan="7">${emptyState("ยังไม่มีข้อมูล")}</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+          ${pager(state.invoices.page, state.invoices.totalPages, "changeInvoicePage")}
+        </section>
+      `;
+    }
+
+    function renderSettings() {
+      const s = state.settings || {};
+      return `
+        <section class="page-head">
+          <div>
+            <h1 class="page-title">ตั้งค่าระบบ</h1>
+            <div class="subtle">เชื่อมต่อ Google Sheets ตั้งค่าอัตราค่าน้ำ/ไฟ และข้อมูลธนาคาร</div>
+          </div>
+        </section>
+
+        <section class="settings-grid">
+          <div class="panel panel-block">
+            <div class="panel-title"><h3>ข้อมูลหอพัก</h3></div>
+            <div class="form-grid">
+              <label class="field"><span>ชื่อหอพัก</span><input id="settingDormName" value="${escapeHtml(s.dorm_name || "")}"></label>
+              <label class="field"><span>ที่อยู่</span><textarea id="settingAddress">${escapeHtml(s.dorm_address || "")}</textarea></label>
+              <label class="field"><span>เบอร์โทร</span><input id="settingPhone" value="${escapeHtml(s.dorm_phone || "")}"></label>
+            </div>
+          </div>
+
+          <div class="panel panel-block">
+            <div class="panel-title"><h3>อัตราค่าน้ำและค่าไฟ</h3></div>
+            <div class="form-grid cols-2">
+              <label class="field"><span>ค่าน้ำ / หน่วย</span><input id="settingWaterRate" type="number" value="${escapeHtml(s.water_rate || "18")}"></label>
+              <label class="field"><span>ค่าไฟ / หน่วย</span><input id="settingElectricRate" type="number" value="${escapeHtml(s.electric_rate || "8")}"></label>
+              <label class="field"><span>ค่าเช่าเริ่มต้น</span><input id="settingBaseRent" type="number" value="${escapeHtml(s.default_base_rent || "3500")}"></label>
+              <label class="field"><span>ค่าส่วนกลางเริ่มต้น</span><input id="settingCommonFee" type="number" value="${escapeHtml(s.default_common_fee || "300")}"></label>
+            </div>
+          </div>
+
+          <div class="panel panel-block">
+            <div class="panel-title"><h3>บัญชีรับชำระ</h3></div>
+            <div class="form-grid">
+              <label class="field"><span>ธนาคาร</span><input id="settingBankName" value="${escapeHtml(s.bank_name || "")}"></label>
+              <label class="field"><span>ชื่อบัญชี</span><input id="settingBankAccountName" value="${escapeHtml(s.bank_account_name || "")}"></label>
+              <label class="field"><span>เลขบัญชี</span><input id="settingBankAccountNo" value="${escapeHtml(s.bank_account_no || "")}"></label>
+              <label class="field"><span>PromptPay</span><input id="settingPromptPay" value="${escapeHtml(s.promptpay_id || "")}"></label>
+            </div>
+          </div>
+
+          <div class="panel panel-block">
+            <div class="panel-title"><h3>เชื่อมต่อระบบ</h3></div>
+            <div class="form-grid">
+              <label class="field">
+                <span>Apps Script Web App URL</span>
+                <textarea id="settingScriptUrl">${escapeHtml(state.scriptUrl || APP_URL_PLACEHOLDER)}</textarea>
+              </label>
+              <div class="info-box">
+                จุดนี้คือช่อง <strong>** วาง APP URL ตรงนี้ **</strong><br>
+                ถ้ายังไม่ใส่ ระบบจะใช้ข้อมูลตัวอย่างในเครื่องก่อน
+              </div>
+              <label class="field"><span>Admin User</span><input id="settingAdminUser" value="${escapeHtml(s.admin_user || "admin")}"></label>
+              <label class="field"><span>Admin Password</span><input id="settingAdminPassword" value="${escapeHtml(s.admin_password || "admin1234")}"></label>
+            </div>
+            <div class="actions" style="margin-top:14px;">
+              <button class="btn btn-primary" type="button" onclick="saveSettings()">บันทึกการตั้งค่า</button>
+              <button class="btn btn-secondary" type="button" onclick="testConnection()">ทดสอบการเชื่อมต่อ</button>
+              <button class="btn btn-outline" type="button" onclick="initDatabase()">สร้างตารางและข้อมูลดัมมี่</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function summaryCard(label, value, foot, extraStyle = "") {
+      return `
+        <div class="panel stat-card">
+          <div class="stat-label">${label}</div>
+          <div class="stat-value" style="${extraStyle}">${value}</div>
+          <div class="stat-foot">${foot}</div>
+        </div>
+      `;
+    }
+
+    function quickCard(className, icon, title, text, action) {
+      return `
+        <button class="panel quick-card ${className}" type="button" onclick="${action}">
+          <span class="material-symbols-outlined icon">${icon}</span>
+          <div>
+            <div class="title">${title}</div>
+            <div class="subtle" style="color:${className ? "rgba(255,255,255,0.86)" : "var(--muted)"};">${text}</div>
+          </div>
+        </button>
+      `;
+    }
+
+    function invoiceCard(invoice) {
+      const paid = invoice.status === "paid";
+      return `
+        <article class="list-item">
+          <div class="panel-title">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h3 style="margin:0;">ห้อง ${escapeHtml(invoice.room_no)}</h3>
+                <span class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</span>
+              </div>
+              <div class="subtle" style="margin-top:6px;">${escapeHtml(invoice.tenant_name || "-")} • ${escapeHtml(invoice.invoice_no || "-")}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="subtle" style="margin:0;">ยอดรวม</div>
+              <div class="money" style="font-size:1.8rem; color:${paid ? "var(--green-text)" : "var(--text)"};">${money(invoice.total_amount || 0)}</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-outline" type="button" onclick="openInvoiceDetail('${invoice.invoice_id}')">
+              <span class="material-symbols-outlined">visibility</span>
+              ดูใบแจ้งหนี้
+            </button>
+            <button class="btn btn-outline" type="button" onclick="shareInvoice('${invoice.invoice_id}')">
+              <span class="material-symbols-outlined">share</span>
+              แชร์/พิมพ์
+            </button>
+            <button class="btn ${paid ? "btn-secondary" : "btn-primary"}" type="button" ${paid ? "disabled" : ""} onclick="openPaymentModal('${invoice.invoice_id}')">
+              <span class="material-symbols-outlined">${paid ? "check_circle" : "payments"}</span>
+              ${paid ? "รับชำระแล้ว" : "รับชำระเงิน"}
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    function logCard(log) {
+      return `
+        <article class="list-item">
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div class="brand-badge" style="width:44px; height:44px; border-radius:16px; font-size:1rem;">
+              <span class="material-symbols-outlined">${logIcon(log.action)}</span>
+            </div>
+            <div>
+              <div style="font-weight:700;">${escapeHtml(log.detail || log.action)}</div>
+              <div class="subtle" style="margin-top:4px;">${escapeHtml(log.created_at || "")}</div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function roomMobileCard(room) {
+      return `
+        <article class="panel panel-block">
+          <div class="panel-title">
+            <div>
+              <div class="subtle" style="margin:0 0 6px;">ชั้น ${escapeHtml(room.floor || "-")}</div>
+              <h3 style="margin:0;">${escapeHtml(room.room_no)}</h3>
+            </div>
+            <div class="badge ${room.status}">${roomStatusLabel(room.status)}</div>
+          </div>
+          <div class="list">
+            <div>ผู้เช่า: <strong>${escapeHtml(room.tenant_name || "-")}</strong></div>
+            <div>โทร: <strong>${escapeHtml(room.phone || "-")}</strong></div>
+            <div>ค่าเช่า: <strong>${money(room.base_rent || 0)}</strong></div>
+          </div>
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn btn-outline" type="button" onclick="openRoomModal('${room.room_id}')">แก้ไข</button>
+            <button class="btn btn-secondary" type="button" onclick="prepareMeterFromRoom('${room.room_id}')">จดมิเตอร์</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function roomTableRow(room) {
+      return `
+        <tr>
+          <td><strong>${escapeHtml(room.room_no)}</strong></td>
+          <td>${escapeHtml(room.floor || "-")}</td>
+          <td>${escapeHtml(room.tenant_name || "-")}</td>
+          <td>${escapeHtml(room.phone || "-")}</td>
+          <td>${money(room.base_rent || 0)}</td>
+          <td><span class="badge ${room.status}">${roomStatusLabel(room.status)}</span></td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-outline" type="button" onclick="openRoomModal('${room.room_id}')">แก้ไข</button>
+              <button class="btn btn-danger" type="button" onclick="deleteRoom('${room.room_id}')">ลบ</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function invoiceTableRow(invoice) {
+      return `
+        <tr>
+          <td>${escapeHtml(invoice.invoice_no || "-")}</td>
+          <td>${escapeHtml(invoice.room_no || "-")}</td>
+          <td>${escapeHtml(invoice.tenant_name || "-")}</td>
+          <td>${escapeHtml(invoice.billing_month || "-")}</td>
+          <td>${money(invoice.total_amount || 0)}</td>
+          <td><span class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</span></td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-outline" type="button" onclick="openInvoiceDetail('${invoice.invoice_id}')">ดู</button>
+              <button class="btn btn-primary" type="button" ${invoice.status === "paid" ? "disabled" : ""} onclick="openPaymentModal('${invoice.invoice_id}')">ชำระ</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function pager(page, totalPages, handler) {
+      if (!totalPages || totalPages <= 1) return "";
+      return `
+        <div class="actions" style="margin-top:16px;">
+          <button class="btn btn-outline" type="button" ${page <= 1 ? "disabled" : ""} onclick="${handler}(${page - 1})">ก่อนหน้า</button>
+          <div class="subtle" style="align-self:center;">หน้า ${numberText(page)} / ${numberText(totalPages)}</div>
+          <button class="btn btn-outline" type="button" ${page >= totalPages ? "disabled" : ""} onclick="${handler}(${page + 1})">ถัดไป</button>
+        </div>
+      `;
+    }
+
+    function emptyState(text) {
+      return `<div class="empty-state">${text}</div>`;
+    }
+
+    function goPage(page) {
+      state.page = page;
+      localStorage.setItem(STORAGE_KEYS.page, page);
+      renderShell();
+      loadPage(page);
+    }
+
+    function setLoading(value) {
+      state.loading = value;
+      renderPage();
+    }
+
+    async function api(action, payload = {}, options = {}) {
+      const settings = {
+        anonymous: false,
+        silent: false,
+        ...options
+      };
+
+      try {
+        if (isMockMode()) {
+          return mockApi(action, payload, settings);
+        }
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action,
+            payload,
+            auth: settings.anonymous ? null : state.auth
+          })
+        });
+
+        const json = await response.json();
+        if (!json.success) {
+          throw new Error(json.error || json.message || "เรียก API ไม่สำเร็จ");
+        }
+        return json.data;
+      } catch (error) {
+        if (!settings.silent) {
+          console.error("API error", action, error);
+        }
+        throw error;
+      }
+    }
+
+    function isMockMode() {
+      return !state.scriptUrl || state.scriptUrl === APP_URL_PLACEHOLDER;
+    }
+
+    function mockApi(action, payload = {}, options = {}) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            if (!options.anonymous && action !== "PING" && action !== "INIT_DATABASE") {
+              authenticateMock(state.auth);
+            }
+
+            const result = mockHandlers[action] ? mockHandlers[action](payload) : null;
+            if (result === null || result === undefined) {
+              throw new Error("ยังไม่มี action นี้ในโหมดตัวอย่าง: " + action);
+            }
+            resolve(deepClone(result));
+          } catch (error) {
+            reject(error);
+          }
+        }, 120);
+      });
+    }
+
+    const mockHandlers = {
+      LOGIN(payload) {
+        const user = mockDb.settings.find((item) => item.key === "admin_user")?.value || "admin";
+        const pass = mockDb.settings.find((item) => item.key === "admin_password")?.value || "admin1234";
+        if (payload.username !== user || payload.password !== pass) {
+          throw new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        }
+        return { ok: true };
+      },
+      GET_SETTINGS() {
+        return objectFromSettings(mockDb.settings);
+      },
+      SAVE_SETTINGS(payload) {
+        upsertSettings(mockDb.settings, payload);
+        return objectFromSettings(mockDb.settings);
+      },
+      INIT_DATABASE() {
+        resetMockDatabase();
+        return { message: "สร้างข้อมูลดัมมี่ใหม่แล้ว" };
+      },
+      PING() {
+        return { status: "OK", mode: "mock" };
+      },
+      GET_DASHBOARD_SUMMARY() {
+        return summarizeMock();
+      },
+      GET_LOGS(payload) {
+        const limit = Number(payload.limit || 10);
+        return { items: mockDb.logs.slice(0, limit) };
+      },
+      GET_ROOMS(payload) {
+        const page = Number(payload.page || 1);
+        const pageSize = Number(payload.pageSize || 20);
+        const query = String(payload.query || "").trim().toLowerCase();
+        const status = payload.status || "all";
+        let items = mockDb.rooms.slice();
+        if (query) {
+          items = items.filter((room) => {
+            return [room.room_no, room.tenant_name, room.phone].join(" ").toLowerCase().includes(query);
+          });
+        }
+        if (status !== "all") {
+          items = items.filter((room) => room.status === status);
+        }
+        items.sort((a, b) => String(a.room_no).localeCompare(String(b.room_no)));
+        return paginate(items, page, pageSize);
+      },
+      GET_ROOM_DETAIL(payload) {
+        const room = mockDb.rooms.find((item) => item.room_id === payload.roomId);
+        if (!room) throw new Error("ไม่พบห้องพัก");
+        return room;
+      },
+      CREATE_ROOM(payload) {
+        const now = stamp();
+        const room = {
+          room_id: uid("R"),
+          room_no: payload.room_no,
+          floor: payload.floor,
+          tenant_name: payload.tenant_name,
+          phone: payload.phone,
+          status: payload.status,
+          base_rent: Number(payload.base_rent || 0),
+          common_fee: Number(payload.common_fee || 0),
+          parking_fee: Number(payload.parking_fee || 0),
+          internet_fee: Number(payload.internet_fee || 0),
+          other_fee: Number(payload.other_fee || 0),
+          note: payload.note || "",
+          created_at: now,
+          updated_at: now
+        };
+        mockDb.rooms.unshift(room);
+        syncMockTenant(room);
+        pushMockLog("CREATE_ROOM", `เพิ่มห้อง ${room.room_no}`);
+        return room;
+      },
+      UPDATE_ROOM(payload) {
+        const room = mockDb.rooms.find((item) => item.room_id === payload.room_id);
+        if (!room) throw new Error("ไม่พบห้องพัก");
+        Object.assign(room, payload, { updated_at: stamp() });
+        syncMockTenant(room);
+        pushMockLog("UPDATE_ROOM", `อัปเดตห้อง ${room.room_no}`);
+        return room;
+      },
+      DELETE_ROOM(payload) {
+        const index = mockDb.rooms.findIndex((item) => item.room_id === payload.roomId);
+        if (index < 0) throw new Error("ไม่พบห้องพัก");
+        const [room] = mockDb.rooms.splice(index, 1);
+        pushMockLog("DELETE_ROOM", `ลบห้อง ${room.room_no}`);
+        return { ok: true };
+      },
+      GET_METER_PROGRESS(payload) {
+        const month = payload.billingMonth || currentMonth();
+        const rooms = mockDb.rooms.filter((room) => room.status !== "disabled");
+        const done = rooms.filter((room) => mockDb.meters.some((meter) => meter.billing_month === month && meter.room_id === room.room_id)).length;
+        return {
+          total: rooms.length,
+          done,
+          percent: rooms.length ? Math.round(done / rooms.length * 100) : 0,
+          rooms: rooms.map((room) => ({ room_id: room.room_id, room_no: room.room_no, status: room.status }))
+        };
+      },
+      GET_PREVIOUS_METER(payload) {
+        const room = mockDb.rooms.find((item) => item.room_id === payload.roomId);
+        const records = mockDb.meters
+          .filter((item) => item.room_id === payload.roomId)
+          .sort((a, b) => String(b.billing_month).localeCompare(String(a.billing_month)));
+        const existing = records.find((item) => item.billing_month === payload.billingMonth);
+        const previous = records.find((item) => item.billing_month < payload.billingMonth) || {};
+        return {
+          room_id: payload.roomId,
+          room_no: room?.room_no || "",
+          billing_month: payload.billingMonth,
+          water_prev: Number(existing?.water_prev ?? previous.water_current ?? 0),
+          water_current: existing?.water_current ?? "",
+          electric_prev: Number(existing?.electric_prev ?? previous.electric_current ?? 0),
+          electric_current: existing?.electric_current ?? "",
+          water_rate: existing?.water_rate ?? settingValue("water_rate", 18),
+          electric_rate: existing?.electric_rate ?? settingValue("electric_rate", 8)
+        };
+      },
+      SAVE_METER_READING(payload) {
+        const data = buildMeterPayload(payload);
+        const existing = mockDb.meters.find((item) => item.room_id === data.room_id && item.billing_month === data.billing_month);
+        if (existing) {
+          Object.assign(existing, data, { updated_at: stamp() });
+        } else {
+          mockDb.meters.unshift({
+            meter_id: uid("M"),
+            recorded_at: stamp(),
+            updated_at: stamp(),
+            note: payload.note || "",
+            ...data
+          });
+        }
+        pushMockLog("SAVE_METER_READING", `บันทึกมิเตอร์ห้อง ${data.room_no} เดือน ${data.billing_month}`);
+        return { ok: true };
+      },
+      GET_METER_READINGS(payload) {
+        const month = payload.billingMonth || currentMonth();
+        return {
+          items: mockDb.meters.filter((item) => item.billing_month === month)
+        };
+      },
+      GENERATE_INVOICES(payload) {
+        const month = payload.billingMonth || currentMonth();
+        let count = 0;
+        mockDb.rooms.filter((room) => room.status === "occupied").forEach((room) => {
+          const meter = mockDb.meters.find((item) => item.room_id === room.room_id && item.billing_month === month) || {};
+          const customAmount = mockDb.customCharges
+            .filter((item) => item.room_id === room.room_id && item.billing_month === month && item.active === "TRUE")
+            .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+          const invoice = buildInvoiceFromRoom(room, meter, month, customAmount);
+          const existing = mockDb.invoices.find((item) => item.room_id === room.room_id && item.billing_month === month);
+          if (existing) {
+            Object.assign(existing, invoice, { updated_at: stamp() });
+          } else {
+            mockDb.invoices.unshift({
+              invoice_id: uid("I"),
+              created_at: stamp(),
+              updated_at: stamp(),
+              paid_at: "",
+              paid_amount: 0,
+              status: "unpaid",
+              note: "",
+              ...invoice
+            });
+          }
+          count += 1;
+        });
+        pushMockLog("GENERATE_INVOICES", `ออกใบแจ้งหนี้เดือน ${month} จำนวน ${count} ห้อง`);
+        return { created: count };
+      },
+      GET_INVOICES(payload) {
+        const page = Number(payload.page || 1);
+        const pageSize = Number(payload.pageSize || 20);
+        const month = payload.month || "";
+        const status = payload.status || "all";
+        const query = String(payload.query || "").trim().toLowerCase();
+        let items = mockDb.invoices.slice();
+        if (month) items = items.filter((item) => item.billing_month === month);
+        if (status !== "all") items = items.filter((item) => item.status === status);
+        if (query) {
+          items = items.filter((item) => [item.invoice_no, item.room_no, item.tenant_name].join(" ").toLowerCase().includes(query));
+        }
+        items.sort((a, b) => String(b.billing_month).localeCompare(String(a.billing_month)) || String(a.room_no).localeCompare(String(b.room_no)));
+        return paginate(items, page, pageSize);
+      },
+      GET_INVOICE_DETAIL(payload) {
+        const invoice = mockDb.invoices.find((item) => item.invoice_id === payload.invoiceId);
+        if (!invoice) throw new Error("ไม่พบใบแจ้งหนี้");
+        const payments = mockDb.payments.filter((item) => item.invoice_id === invoice.invoice_id).map(stripPaymentPayload);
+        return { ...invoice, payments };
+      },
+      UPDATE_INVOICE_STATUS(payload) {
+        const invoice = mockDb.invoices.find((item) => item.invoice_id === payload.invoice_id);
+        if (!invoice) throw new Error("ไม่พบใบแจ้งหนี้");
+        invoice.status = payload.status;
+        invoice.updated_at = stamp();
+        return invoice;
+      },
+      CANCEL_INVOICE(payload) {
+        return mockHandlers.UPDATE_INVOICE_STATUS({ invoice_id: payload.invoice_id, status: "cancelled" });
+      },
+      SAVE_PAYMENT(payload) {
+        const invoice = mockDb.invoices.find((item) => item.invoice_id === payload.invoice_id);
+        if (!invoice) throw new Error("ไม่พบใบแจ้งหนี้");
+        const payment = {
+          payment_id: uid("P"),
+          invoice_id: invoice.invoice_id,
+          invoice_no: invoice.invoice_no,
+          room_id: invoice.room_id,
+          room_no: invoice.room_no,
+          tenant_name: invoice.tenant_name,
+          paid_amount: Number(payload.paid_amount || invoice.total_amount || 0),
+          method: payload.method || "cash",
+          slip_base64: payload.slip_base64 || "",
+          slip_name: payload.slip_name || "",
+          paid_at: payload.paid_at || stamp(),
+          received_by: payload.received_by || state.auth?.username || "admin",
+          note: payload.note || "",
+          created_at: stamp()
+        };
+        mockDb.payments.unshift(payment);
+        invoice.status = "paid";
+        invoice.paid_amount = payment.paid_amount;
+        invoice.paid_at = payment.paid_at;
+        invoice.updated_at = stamp();
+        pushMockLog("SAVE_PAYMENT", `รับชำระห้อง ${invoice.room_no} จำนวน ${money(payment.paid_amount)}`);
+        return stripPaymentPayload(payment);
+      },
+      GET_PAYMENTS() {
+        return {
+          items: mockDb.payments.map(stripPaymentPayload)
+        };
+      },
+      EXPORT_BACKUP_JSON() {
+        return mockDb;
+      },
+      EXPORT_CSV(payload) {
+        const month = payload.month || currentMonth();
+        const rows = mockDb.invoices.filter((item) => item.billing_month === month);
+        const csv = [
+          ["invoice_no", "room_no", "tenant_name", "total_amount", "status"].join(","),
+          ...rows.map((row) => [row.invoice_no, row.room_no, row.tenant_name, row.total_amount, row.status].map(csvValue).join(","))
+        ].join("\n");
+        return { filename: `invoices-${month}.csv`, content: csv };
+      }
+    };
+
+    function authenticateMock(auth) {
+      if (!auth) throw new Error("ยังไม่ได้เข้าสู่ระบบ");
+      mockHandlers.LOGIN(auth);
+    }
+
+    async function applyRoomFilters() {
+      state.rooms.query = valueOf("roomSearchInput");
+      state.rooms.status = valueOf("roomStatusFilter");
+      state.rooms.page = 1;
+      await loadRooms();
+      renderPage();
+    }
+
+    async function resetRoomFilters() {
+      state.rooms.query = "";
+      state.rooms.status = "all";
+      state.rooms.page = 1;
+      await loadRooms();
+      renderPage();
+    }
+
+    async function changeRoomPage(page) {
+      state.rooms.page = page;
+      await loadRooms();
+      renderPage();
+    }
+
+    async function changeInvoicePage(page) {
+      state.invoices.page = page;
+      await loadInvoices();
+      renderPage();
+    }
+
+    async function setInvoiceStatus(status) {
+      state.invoices.status = status;
+      state.invoices.page = 1;
+      await loadInvoices();
+      renderPage();
+    }
+
+    async function applyInvoiceFilters() {
+      state.invoices.month = valueOf("invoiceMonthInput") || currentMonth();
+      state.invoices.query = valueOf("invoiceSearchInput");
+      state.invoices.page = 1;
+      await loadInvoices();
+      renderPage();
+    }
+
+    function prepareMeterFromRoom(roomId) {
+      state.meter.roomId = roomId;
+      goPage("meters");
+    }
+
+    async function selectMeterRoom(roomId) {
+      state.meter.roomId = roomId;
+      state.meter.previous = await api("GET_PREVIOUS_METER", {
+        billingMonth: state.meter.month,
+        roomId
+      });
+      renderPage();
+    }
+
+    function setMeterMode(mode) {
+      state.meter.mode = mode;
+      renderPage();
+    }
+
+    async function changeMonth(type) {
+      const current = type === "meter" ? state.meter.month : state.invoices.month;
+      const value = prompt("ระบุเดือนในรูปแบบ YYYY-MM", current);
+      if (!value) return;
+      if (!/^\d{4}-\d{2}$/.test(value)) {
+        showToast("กรุณากรอกเดือนเป็น YYYY-MM", "error");
+        return;
+      }
+      if (type === "meter") {
+        state.meter.month = value;
+        state.meter.previous = null;
+        await loadMeters();
+      } else {
+        state.invoices.month = value;
+        state.invoices.page = 1;
+        await loadInvoices();
+      }
+      renderShell();
+      renderPage();
+    }
+
+    function openMonthQuickJump() {
+      const value = prompt("เปลี่ยนเดือน (YYYY-MM)", state.invoices.month);
+      if (!value) return;
+      if (!/^\d{4}-\d{2}$/.test(value)) {
+        showToast("กรุณากรอกเดือนเป็น YYYY-MM", "error");
+        return;
+      }
+      state.invoices.month = value;
+      state.meter.month = value;
+      renderShell();
+      loadPage(state.page, true);
+    }
+
+    function updateMeterPreview() {
+      const prev = state.meter.previous || {};
+      const waterInput = document.getElementById("waterCurrentInput");
+      const electricInput = document.getElementById("electricCurrentInput");
+      if (waterInput) prev.water_current = waterInput.value;
+      if (electricInput) prev.electric_current = electricInput.value;
+      state.meter.previous = prev;
+
+      updateMeterPreviewBlock(
+        "water",
+        prev.water_current,
+        Number(prev.water_prev || 0),
+        Number(prev.water_rate || state.settings.water_rate || 18),
+        "เลขมิเตอร์น้ำปัจจุบันน้อยกว่าครั้งก่อน กรุณาตรวจสอบ"
+      );
+      updateMeterPreviewBlock(
+        "electric",
+        prev.electric_current,
+        Number(prev.electric_prev || 0),
+        Number(prev.electric_rate || state.settings.electric_rate || 8),
+        "เลขมิเตอร์ไฟปัจจุบันน้อยกว่าครั้งก่อน กรุณาตรวจสอบ"
+      );
+    }
+
+    function updateMeterPreviewBlock(prefix, currentValue, previousValue, rate, invalidText) {
+      const input = document.getElementById(prefix + "CurrentInput");
+      const preview = document.getElementById(prefix + "Preview");
+      if (!input || !preview) return;
+      const hasValue = currentValue !== "";
+      const current = Number(currentValue || 0);
+      const invalid = hasValue && current < previousValue;
+      const units = Math.max(0, current - previousValue);
+      const total = units * Number(rate || 0);
+      input.classList.toggle("invalid", invalid);
+      preview.className = invalid ? "danger-box" : "success-box";
+      preview.textContent = invalid
+        ? invalidText
+        : `หน่วยที่ใช้ ${numberText(units)} หน่วย | ยอดรวม ${money(total)}`;
+    }
+
+    async function saveMeter(nextRoom) {
+      const prev = state.meter.previous || {};
+      const room = state.meter.rooms.find((item) => item.room_id === state.meter.roomId);
+      if (!room) {
+        showToast("กรุณาเลือกห้อง", "error");
+        return;
+      }
+
+      const waterCurrent = state.meter.mode === "electric"
+        ? Number(prev.water_current !== "" && prev.water_current !== undefined ? prev.water_current : (prev.water_prev || 0))
+        : Number(valueOf("waterCurrentInput") || prev.water_prev || 0);
+      const electricCurrent = state.meter.mode === "water"
+        ? Number(prev.electric_current !== "" && prev.electric_current !== undefined ? prev.electric_current : (prev.electric_prev || 0))
+        : Number(valueOf("electricCurrentInput") || prev.electric_prev || 0);
+      if (state.meter.mode !== "electric" && Number(waterCurrent) < Number(prev.water_prev || 0)) {
+        showToast("เลขมิเตอร์น้ำต่ำกว่าครั้งก่อน", "error");
+        return;
+      }
+      if (state.meter.mode !== "water" && Number(electricCurrent) < Number(prev.electric_prev || 0)) {
+        showToast("เลขมิเตอร์ไฟต่ำกว่าครั้งก่อน", "error");
+        return;
+      }
+
+      await api("SAVE_METER_READING", {
+        billingMonth: state.meter.month,
+        roomId: state.meter.roomId,
+        roomNo: room.room_no,
+        waterPrev: prev.water_prev || 0,
+        waterCurrent: waterCurrent || 0,
+        electricPrev: prev.electric_prev || 0,
+        electricCurrent: electricCurrent || 0,
+        waterRate: prev.water_rate || state.settings.water_rate || 18,
+        electricRate: prev.electric_rate || state.settings.electric_rate || 8
+      });
+
+      showToast("บันทึกมิเตอร์เรียบร้อย", "success");
+      await loadMeters();
+
+      if (nextRoom) {
+        const index = state.meter.rooms.findIndex((item) => item.room_id === state.meter.roomId);
+        const next = state.meter.rooms[index + 1];
+        if (next) {
+          state.meter.roomId = next.room_id;
+          state.meter.previous = await api("GET_PREVIOUS_METER", {
+            billingMonth: state.meter.month,
+            roomId: next.room_id
+          });
+        }
+      }
+      renderPage();
+    }
+
+    async function handleGenerateInvoices() {
+      await api("GENERATE_INVOICES", { billingMonth: state.invoices.month });
+      showToast("ออกใบแจ้งหนี้สำเร็จ", "success");
+      await Promise.all([loadInvoices(), loadDashboard()]);
+      renderPage();
+    }
+
+    async function openRoomModal(roomId = "") {
+      const room = roomId ? await api("GET_ROOM_DETAIL", { roomId }) : {
+        room_no: "",
+        floor: "",
+        tenant_name: "",
+        phone: "",
+        status: "vacant",
+        base_rent: state.settings.default_base_rent || 3500,
+        common_fee: state.settings.default_common_fee || 300,
+        parking_fee: 0,
+        internet_fee: 0,
+        other_fee: 0,
+        note: ""
+      };
+      openModal({
+        title: roomId ? `แก้ไขห้อง ${room.room_no}` : "เพิ่มห้องพัก",
+        content: `
+          <form id="roomForm" class="form-grid">
+            <div class="form-grid cols-2">
+              <label class="field"><span>เลขห้อง</span><input name="room_no" value="${escapeHtml(room.room_no || "")}" required></label>
+              <label class="field"><span>ชั้น</span><input name="floor" value="${escapeHtml(room.floor || "")}" required></label>
+              <label class="field"><span>ผู้เช่า</span><input name="tenant_name" value="${escapeHtml(room.tenant_name || "")}"></label>
+              <label class="field"><span>เบอร์โทร</span><input name="phone" value="${escapeHtml(room.phone || "")}"></label>
+              <label class="field"><span>ค่าเช่า</span><input name="base_rent" type="number" value="${escapeHtml(room.base_rent || 0)}"></label>
+              <label class="field"><span>ค่าส่วนกลาง</span><input name="common_fee" type="number" value="${escapeHtml(room.common_fee || 0)}"></label>
+              <label class="field"><span>ค่าจอดรถ</span><input name="parking_fee" type="number" value="${escapeHtml(room.parking_fee || 0)}"></label>
+              <label class="field"><span>ค่าอินเทอร์เน็ต</span><input name="internet_fee" type="number" value="${escapeHtml(room.internet_fee || 0)}"></label>
+              <label class="field"><span>ค่าอื่น ๆ</span><input name="other_fee" type="number" value="${escapeHtml(room.other_fee || 0)}"></label>
+              <label class="field">
+                <span>สถานะ</span>
+                <select name="status">
+                  ${["occupied", "vacant", "maintenance", "disabled"].map((status) => `
+                    <option value="${status}" ${room.status === status ? "selected" : ""}>${roomStatusLabel(status)}</option>
+                  `).join("")}
+                </select>
+              </label>
+            </div>
+            <label class="field"><span>หมายเหตุ</span><textarea name="note">${escapeHtml(room.note || "")}</textarea></label>
+            <div class="actions">
+              <button class="btn btn-primary" type="submit">${roomId ? "บันทึกการแก้ไข" : "เพิ่มห้องพัก"}</button>
+            </div>
+          </form>
+        `
+      });
+      document.getElementById("roomForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const payload = Object.fromEntries(form.entries());
+        if (roomId) {
+          payload.room_id = roomId;
+          await api("UPDATE_ROOM", payload);
+        } else {
+          await api("CREATE_ROOM", payload);
+        }
+        closeModal();
+        showToast("บันทึกข้อมูลห้องแล้ว", "success");
+        await loadRooms();
+        if (state.page === "dashboard") {
+          await loadDashboard();
+        }
+        renderPage();
+      };
+    }
+
+    async function deleteRoom(roomId) {
+      if (!confirm("ยืนยันการลบห้องนี้?")) return;
+      await api("DELETE_ROOM", { roomId });
+      showToast("ลบห้องเรียบร้อย", "success");
+      await loadRooms();
+      renderPage();
+    }
+
+    async function openInvoiceDetail(invoiceId) {
+      const invoice = await api("GET_INVOICE_DETAIL", { invoiceId });
+      openModal({
+        title: `ใบแจ้งหนี้ ${invoice.invoice_no}`,
+        content: `
+          <div class="panel panel-block" style="box-shadow:none;">
+            <div class="panel-title">
+              <div>
+                <h3 style="margin:0;">${escapeHtml(state.settings.dorm_name || "Easy Rent Bill")}</h3>
+                <div class="subtle">${escapeHtml(invoice.billing_month)} • ห้อง ${escapeHtml(invoice.room_no)}</div>
+              </div>
+              <div class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</div>
+            </div>
+            <div class="kv"><div>ผู้เช่า</div><strong>${escapeHtml(invoice.tenant_name || "-")}</strong></div>
+            <div class="kv"><div>ค่าเช่า</div><strong>${money(invoice.rent_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าน้ำ</div><strong>${money(invoice.water_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าไฟ</div><strong>${money(invoice.electric_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าส่วนกลาง + ค่าอื่น</div><strong>${money((invoice.common_fee || 0) + (invoice.parking_fee || 0) + (invoice.internet_fee || 0) + (invoice.other_fee || 0) + (invoice.custom_amount || 0))}</strong></div>
+            <div class="kv"><div>ยอดรวม</div><strong style="font-size:1.4rem;">${money(invoice.total_amount || 0)}</strong></div>
+            ${invoice.payments?.length ? `
+              <div class="panel-title" style="margin-top:20px;"><h3>ประวัติชำระเงิน</h3></div>
+              ${invoice.payments.map((payment) => `
+                <div class="list-item" style="margin-bottom:10px;">
+                  <div><strong>${money(payment.paid_amount || 0)}</strong> • ${payment.method === "cash" ? "เงินสด" : "โอนผ่าน QR Code"}</div>
+                  <div class="subtle">${escapeHtml(payment.paid_at || "")} • ${escapeHtml(payment.received_by || "-")}</div>
+                </div>
+              `).join("")}
+            ` : ""}
+            <div class="actions" style="margin-top:18px;">
+              <button class="btn btn-primary" type="button" ${invoice.status === "paid" ? "disabled" : ""} onclick="closeModal(); openPaymentModal('${invoice.invoice_id}')">รับชำระเงิน</button>
+              <button class="btn btn-outline" type="button" onclick="shareInvoice('${invoice.invoice_id}')">แชร์/พิมพ์</button>
+            </div>
+          </div>
+        `
+      });
+    }
+
+    function shareInvoice(invoiceId) {
+      const invoice = (state.invoices.items || state.dashboardInvoices || []).find((item) => item.invoice_id === invoiceId);
+      const text = invoice
+        ? `ใบแจ้งหนี้ ${invoice.invoice_no}\nห้อง ${invoice.room_no}\nยอดรวม ${money(invoice.total_amount || 0)}`
+        : "แชร์ใบแจ้งหนี้";
+      if (navigator.share) {
+        navigator.share({ title: "ใบแจ้งหนี้", text }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text).then(() => showToast("คัดลอกข้อมูลใบแจ้งหนี้แล้ว", "success"));
+      }
+    }
+
+    async function openPaymentModal(invoiceId) {
+      const invoice = await api("GET_INVOICE_DETAIL", { invoiceId });
+      const qrBank = escapeHtml(state.settings.bank_name || "ธนาคาร");
+      const qrName = escapeHtml(state.settings.bank_account_name || "-");
+      const qrNo = escapeHtml(state.settings.bank_account_no || "-");
+      const promptPay = escapeHtml(state.settings.promptpay_id || "-");
+
+      openModal({
+        title: "รับชำระเงิน",
+        content: `
+          <div class="panel panel-block" style="box-shadow:none;">
+            <div class="panel-title">
+              <div>
+                <h3 style="margin:0;">ห้อง ${escapeHtml(invoice.room_no)}</h3>
+                <div class="subtle">${escapeHtml(invoice.tenant_name || "-")}</div>
+              </div>
+              <div class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</div>
+            </div>
+            <div class="kv"><div>ยอดรวมที่ต้องชำระ</div><strong style="font-size:2rem; color:var(--primary);">${money(invoice.total_amount || 0)}</strong></div>
+            <div class="segmented" style="margin:18px 0;">
+              <button id="cashTabBtn" class="segment-btn active" type="button" onclick="switchPaymentTab('cash')">เงินสด (Cash)</button>
+              <button id="transferTabBtn" class="segment-btn" type="button" onclick="switchPaymentTab('transfer')">โอนผ่าน QR Code</button>
+            </div>
+
+            <form id="paymentForm" class="form-grid">
+              <input type="hidden" name="invoice_id" value="${escapeHtml(invoice.invoice_id)}">
+              <input type="hidden" name="method" id="paymentMethodInput" value="cash">
+              <div id="cashSection">
+                <div class="form-grid cols-2">
+                  <label class="field"><span>ยอดที่รับ</span><input name="paid_amount" type="number" value="${escapeHtml(invoice.total_amount || 0)}" required></label>
+                  <label class="field"><span>วันที่รับชำระ</span><input name="paid_at" value="${escapeHtml(stamp())}" required></label>
+                  <label class="field"><span>ผู้รับเงิน</span><input name="received_by" value="${escapeHtml(state.auth?.username || "admin")}"></label>
+                  <label class="field"><span>หมายเหตุ</span><input name="note" placeholder="เช่น ชำระครบ"></label>
+                </div>
+              </div>
+
+              <div id="transferSection" style="display:none;">
+                <div class="panel panel-block" style="background:#f9fbff; margin-bottom:14px;">
+                  <div style="display:grid; place-items:center; min-height:240px; border:1px dashed var(--panel-line); border-radius:22px; background:#fff;">
+                    <div style="text-align:center;">
+                      <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary);">qr_code_2</span>
+                      <div style="font-weight:700; margin-top:8px;">${qrBank}</div>
+                      <div class="subtle">${qrName}</div>
+                      <div style="margin-top:8px; font-size:1.3rem; font-weight:800;">${qrNo}</div>
+                      <div class="subtle">พร้อมเพย์ ${promptPay}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid cols-2">
+                  <label class="field"><span>ยอดที่โอน</span><input name="paid_amount_transfer" type="number" value="${escapeHtml(invoice.total_amount || 0)}"></label>
+                  <label class="field"><span>ชื่อผู้ตรวจรับ</span><input name="received_by_transfer" value="${escapeHtml(state.auth?.username || "admin")}"></label>
+                  <label class="field"><span>วันที่รับชำระ</span><input name="paid_at_transfer" value="${escapeHtml(stamp())}"></label>
+                  <label class="field"><span>หมายเหตุ</span><input name="note_transfer" placeholder="เช่น แนบสลิปแล้ว"></label>
+                  <label class="field" style="grid-column:1/-1;">
+                    <span>แนบหลักฐานการโอน / ถ่ายรูปสลิป</span>
+                    <input id="slipInput" type="file" accept="image/*" capture="environment">
+                  </label>
+                  <input type="hidden" name="slip_base64" id="slipBase64Input">
+                  <input type="hidden" name="slip_name" id="slipNameInput">
+                  <div id="slipPreviewWrap" style="grid-column:1/-1; display:none;">
+                    <img id="slipPreview" class="slip-preview" alt="Slip preview">
+                    <div class="helper" style="margin-top:8px;">ระบบจะย่อภาพให้สูงสุด 512px ก่อนเก็บเป็น Base64 ลงชีต</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sticky-actions">
+                <button class="btn btn-primary" type="submit" style="width:100%;">ยืนยันการชำระเงิน</button>
+              </div>
+            </form>
+          </div>
+        `
+      });
+
+      document.getElementById("slipInput").addEventListener("change", handleSlipSelected);
+      document.getElementById("paymentForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const method = valueOf("paymentMethodInput");
+        const payload = {
+          invoice_id: form.get("invoice_id")
+        };
+        if (method === "cash") {
+          payload.method = "cash";
+          payload.paid_amount = Number(form.get("paid_amount") || 0);
+          payload.paid_at = String(form.get("paid_at") || "");
+          payload.received_by = String(form.get("received_by") || "");
+          payload.note = String(form.get("note") || "");
+        } else {
+          payload.method = "transfer";
+          payload.paid_amount = Number(form.get("paid_amount_transfer") || 0);
+          payload.paid_at = String(form.get("paid_at_transfer") || "");
+          payload.received_by = String(form.get("received_by_transfer") || "");
+          payload.note = String(form.get("note_transfer") || "");
+          payload.slip_base64 = String(form.get("slip_base64") || "");
+          payload.slip_name = String(form.get("slip_name") || "");
+        }
+        await api("SAVE_PAYMENT", payload);
+        closeModal();
+        showToast("บันทึกการชำระเงินแล้ว", "success");
+        await Promise.all([loadInvoices(), loadDashboard()]);
+        renderPage();
+      };
+    }
+
+    function switchPaymentTab(tab) {
+      const cashActive = tab === "cash";
+      document.getElementById("cashSection").style.display = cashActive ? "" : "none";
+      document.getElementById("transferSection").style.display = cashActive ? "none" : "";
+      document.getElementById("cashTabBtn").classList.toggle("active", cashActive);
+      document.getElementById("transferTabBtn").classList.toggle("active", !cashActive);
+      document.getElementById("paymentMethodInput").value = cashActive ? "cash" : "transfer";
+    }
+
+    async function handleSlipSelected(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const resized = await resizeImageToBase64(file, 512);
+      document.getElementById("slipBase64Input").value = resized.base64;
+      document.getElementById("slipNameInput").value = file.name;
+      document.getElementById("slipPreview").src = resized.base64;
+      document.getElementById("slipPreviewWrap").style.display = "";
+      showToast("ย่อและเตรียมรูปสลิปแล้ว", "success");
+    }
+
+    async function resizeImageToBase64(file, maxHeight) {
+      const imageUrl = await fileToDataUrl(file);
+      const img = await loadImage(imageUrl);
+      const scale = Math.min(1, maxHeight / img.height);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      return {
+        width: canvas.width,
+        height: canvas.height,
+        base64: canvas.toDataURL("image/jpeg", 0.86)
+      };
+    }
+
+    async function saveSettings() {
+      const payload = {
+        dorm_name: valueOf("settingDormName"),
+        dorm_address: valueOf("settingAddress"),
+        dorm_phone: valueOf("settingPhone"),
+        water_rate: valueOf("settingWaterRate"),
+        electric_rate: valueOf("settingElectricRate"),
+        default_base_rent: valueOf("settingBaseRent"),
+        default_common_fee: valueOf("settingCommonFee"),
+        bank_name: valueOf("settingBankName"),
+        bank_account_name: valueOf("settingBankAccountName"),
+        bank_account_no: valueOf("settingBankAccountNo"),
+        promptpay_id: valueOf("settingPromptPay"),
+        admin_user: valueOf("settingAdminUser"),
+        admin_password: valueOf("settingAdminPassword")
+      };
+
+      const scriptUrl = valueOf("settingScriptUrl") || APP_URL_PLACEHOLDER;
+      state.scriptUrl = scriptUrl;
+      localStorage.setItem(STORAGE_KEYS.scriptUrl, scriptUrl);
+
+      if (isMockMode()) {
+        mockHandlers.SAVE_SETTINGS(payload);
+        state.settings = await api("GET_SETTINGS");
+      } else {
+        state.settings = await api("SAVE_SETTINGS", payload);
+      }
+
+      if (state.auth) {
+        state.auth.username = payload.admin_user;
+        state.auth.password = payload.admin_password;
+        localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify(state.auth));
+      }
+
+      renderShell();
+      showToast("บันทึกการตั้งค่าแล้ว", "success");
+      renderPage();
+    }
+
+    async function testConnection() {
+      try {
+        const result = await api("PING", {}, { anonymous: true });
+        showToast(`เชื่อมต่อสำเร็จ: ${result.status || "OK"}`, "success");
+      } catch (error) {
+        showToast(error.message || "เชื่อมต่อไม่สำเร็จ", "error");
+      }
+    }
+
+    async function initDatabase() {
+      if (!confirm("ต้องการสร้างตารางและข้อมูลดัมมี่ใหม่หรือไม่?")) return;
+      await api("INIT_DATABASE", {}, { anonymous: true });
+      showToast("สร้างตาราง/ข้อมูลทดสอบเรียบร้อย", "success");
+      await Promise.all([loadSettings(), loadDashboard(), loadRooms(), loadMeters(), loadInvoices()]);
+      renderPage();
+    }
+
+    async function exportInvoicesCsv() {
+      const data = await api("EXPORT_CSV", { month: state.invoices.month });
+      downloadFile(data.filename || "invoices.csv", data.content || "", "text/csv;charset=utf-8");
+      showToast("ส่งออก CSV แล้ว", "success");
+    }
+
+    async function downloadBackupJson() {
+      const data = await api("EXPORT_BACKUP_JSON");
+      downloadFile(`easy-rent-bill-backup-${state.invoices.month}.json`, JSON.stringify(data, null, 2), "application/json");
+      showToast("ส่งออก JSON แล้ว", "success");
+    }
+
+    function openModal({ title, content }) {
+      const root = document.getElementById("modalRoot");
+      root.className = "modal-root active";
+      root.innerHTML = `
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-card">
+          <div class="modal-head">
+            <div>
+              <h2 class="modal-title">${escapeHtml(title)}</h2>
+            </div>
+            <button class="close-btn" type="button" onclick="closeModal()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          ${content}
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      const root = document.getElementById("modalRoot");
+      root.className = "modal-root";
+      root.innerHTML = "";
+    }
+
+    function showToast(message, type = "info") {
+      const root = document.getElementById("toastRoot");
+      const id = "toast-" + Date.now();
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.id = id;
+      el.textContent = message;
+      root.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    function currentMonth() {
+      const date = new Date();
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function stamp() {
+      const now = new Date();
+      const pad = (value) => String(value).padStart(2, "0");
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    }
+
+    function uid(prefix) {
+      return prefix + Date.now() + Math.floor(Math.random() * 1000);
+    }
+
+    function roomStatusLabel(status) {
+      return ({
+        all: "ทั้งหมด",
+        occupied: "มีผู้เช่า",
+        vacant: "ว่าง",
+        maintenance: "ปรับปรุง",
+        disabled: "ปิดใช้งาน"
+      })[status] || status;
+    }
+
+    function invoiceStatusLabel(status) {
+      return ({
+        all: "ทั้งหมด",
+        unpaid: "ค้างชำระ",
+        paid: "ชำระแล้ว",
+        cancelled: "ยกเลิก"
+      })[status] || status;
+    }
+
+    function formatThaiMonth(value) {
+      if (!value) return "-";
+      const [year, month] = value.split("-");
+      const names = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+      return `${names[Number(month) - 1] || month} ${Number(year) + 543}`;
+    }
+
+    function money(value) {
+      return Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }) + " บาท";
+    }
+
+    function numberText(value) {
+      return Number(value || 0).toLocaleString("th-TH");
+    }
+
+    function numberOrZero(value) {
+      return Number(value || 0);
+    }
+
+    function valueOf(id) {
+      return document.getElementById(id)?.value?.trim() || "";
+    }
+
+    function readJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function csvValue(value) {
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function deepClone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function logIcon(action) {
+      if (action.includes("PAY")) return "payments";
+      if (action.includes("INVOICE")) return "receipt_long";
+      if (action.includes("METER")) return "speed";
+      if (action.includes("ROOM")) return "home_work";
+      return "history";
+    }
+
+    function downloadFile(filename, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
+    }
+
+    function objectFromSettings(items) {
+      return items.reduce((acc, item) => {
+        acc[item.key] = item.value;
+        return acc;
+      }, {});
+    }
+
+    function settingValue(key, fallback) {
+      return objectFromSettings(mockDb.settings)[key] || fallback;
+    }
+
+    function pushMockLog(action, detail) {
+      mockDb.logs.unshift({
+        log_id: uid("L"),
+        action,
+        ref_type: "",
+        ref_id: "",
+        detail,
+        created_at: stamp(),
+        user: state.auth?.username || "admin"
+      });
+      mockDb.logs = mockDb.logs.slice(0, 50);
+    }
+
+    function syncMockTenant(room) {
+      const existing = mockDb.tenants.find((item) => item.room_id === room.room_id);
+      const tenant = {
+        tenant_id: existing?.tenant_id || uid("T"),
+        room_id: room.room_id,
+        name: room.tenant_name || "",
+        phone: room.phone || "",
+        start_date: existing?.start_date || currentMonth() + "-01",
+        end_date: "",
+        status: room.tenant_name ? "active" : "vacant",
+        created_at: existing?.created_at || stamp(),
+        updated_at: stamp()
+      };
+      if (existing) {
+        Object.assign(existing, tenant);
+      } else {
+        mockDb.tenants.unshift(tenant);
+      }
+    }
+
+    function upsertSettings(items, payload) {
+      Object.entries(payload).forEach(([key, value]) => {
+        const existing = items.find((item) => item.key === key);
+        if (existing) {
+          existing.value = String(value);
+          existing.updated_at = stamp();
+        } else {
+          items.push({ key, value: String(value), note: "", updated_at: stamp() });
+        }
+      });
+    }
+
+    function summarizeMock() {
+      const totalRooms = mockDb.rooms.length;
+      const occupiedRooms = mockDb.rooms.filter((item) => item.status === "occupied").length;
+      const vacantRooms = mockDb.rooms.filter((item) => item.status === "vacant").length;
+      const maintenanceRooms = mockDb.rooms.filter((item) => item.status === "maintenance").length;
+      const bills = mockDb.invoices.filter((item) => item.billing_month === state.invoices.month);
+      const payments = mockDb.payments.filter((item) => item.paid_at.startsWith(state.invoices.month));
+      return {
+        total_rooms: totalRooms,
+        occupied_rooms: occupiedRooms,
+        vacant_rooms: vacantRooms,
+        maintenance_rooms: maintenanceRooms,
+        bills_this_month: bills.length,
+        paid_bills: bills.filter((item) => item.status === "paid").length,
+        unpaid_bills: bills.filter((item) => item.status === "unpaid").length,
+        total_revenue: bills.reduce((sum, item) => sum + Number(item.total_amount || 0), 0),
+        received_amount: payments.reduce((sum, item) => sum + Number(item.paid_amount || 0), 0),
+        outstanding_amount: bills.filter((item) => item.status !== "paid").reduce((sum, item) => sum + Number(item.total_amount || 0), 0)
+      };
+    }
+
+    function paginate(items, page, pageSize) {
+      const total = items.length;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      const currentPage = Math.min(Math.max(page, 1), totalPages);
+      const start = (currentPage - 1) * pageSize;
+      return {
+        items: items.slice(start, start + pageSize),
+        total,
+        page: currentPage,
+        pageSize,
+        totalPages
+      };
+    }
+
+    function buildMeterPayload(payload) {
+      const waterPrev = Number(payload.waterPrev || 0);
+      const waterCurrent = Number(payload.waterCurrent || 0);
+      const electricPrev = Number(payload.electricPrev || 0);
+      const electricCurrent = Number(payload.electricCurrent || 0);
+      const waterRate = Number(payload.waterRate || settingValue("water_rate", 18));
+      const electricRate = Number(payload.electricRate || settingValue("electric_rate", 8));
+      return {
+        billing_month: payload.billingMonth,
+        room_id: payload.roomId,
+        room_no: payload.roomNo,
+        water_prev: waterPrev,
+        water_current: waterCurrent,
+        water_unit: Math.max(0, waterCurrent - waterPrev),
+        water_rate: waterRate,
+        water_amount: Math.max(0, waterCurrent - waterPrev) * waterRate,
+        electric_prev: electricPrev,
+        electric_current: electricCurrent,
+        electric_unit: Math.max(0, electricCurrent - electricPrev),
+        electric_rate: electricRate,
+        electric_amount: Math.max(0, electricCurrent - electricPrev) * electricRate
+      };
+    }
+
+    function buildInvoiceFromRoom(room, meter, month, customAmount) {
+      const rentAmount = Number(room.base_rent || 0);
+      const commonFee = Number(room.common_fee || 0);
+      const parkingFee = Number(room.parking_fee || 0);
+      const internetFee = Number(room.internet_fee || 0);
+      const otherFee = Number(room.other_fee || 0);
+      const waterAmount = Number(meter.water_amount || 0);
+      const electricAmount = Number(meter.electric_amount || 0);
+      return {
+        invoice_no: `INV-${month.replace("-", "")}-${room.room_no}`,
+        billing_month: month,
+        room_id: room.room_id,
+        room_no: room.room_no,
+        tenant_id: room.room_id,
+        tenant_name: room.tenant_name || "",
+        rent_amount: rentAmount,
+        common_fee: commonFee,
+        parking_fee: parkingFee,
+        internet_fee: internetFee,
+        other_fee: otherFee,
+        water_amount: waterAmount,
+        electric_amount: electricAmount,
+        custom_amount: Number(customAmount || 0),
+        total_amount: rentAmount + commonFee + parkingFee + internetFee + otherFee + waterAmount + electricAmount + Number(customAmount || 0)
+      };
+    }
+
+    function stripPaymentPayload(payment) {
+      const clone = { ...payment };
+      delete clone.slip_base64;
+      return clone;
+    }
+
+    function createMockDatabase() {
+      return deepClone(buildInitialMockData());
+    }
+
+    function resetMockDatabase() {
+      const fresh = buildInitialMockData();
+      Object.keys(mockDb).forEach((key) => delete mockDb[key]);
+      Object.assign(mockDb, deepClone(fresh));
+    }
+
+    function buildInitialMockData() {
+      const month = currentMonth();
+      const now = stamp();
+      const settings = [
+        ["dorm_name", "Easy Rent Bill"],
+        ["dorm_address", "123 ถนนสุขุมวิท แขวงคลองตัน กรุงเทพฯ"],
+        ["dorm_phone", "02-123-4567"],
+        ["water_rate", "18"],
+        ["electric_rate", "8"],
+        ["default_base_rent", "3500"],
+        ["default_common_fee", "300"],
+        ["bank_name", "กสิกรไทย"],
+        ["bank_account_name", "หอพักใจดี"],
+        ["bank_account_no", "012-3-45678-9"],
+        ["promptpay_id", "0812345678"],
+        ["admin_user", "admin"],
+        ["admin_password", "admin1234"]
+      ].map(([key, value]) => ({ key, value, note: "", updated_at: now }));
+
+      const rooms = [
+        ["R101", "101", "1", "สมชาย ใจดี", "0811111111", "occupied", 3500, 300, 0, 250, 0, ""],
+        ["R102", "102", "1", "", "", "vacant", 3500, 300, 0, 250, 0, ""],
+        ["R201", "201", "2", "มาลี รักดี", "0822222222", "occupied", 4000, 300, 500, 250, 0, ""],
+        ["R202", "202", "2", "วิชัย ใจมั่น", "0833333333", "occupied", 4000, 300, 0, 250, 200, ""],
+        ["R203", "203", "2", "", "", "maintenance", 4800, 300, 0, 250, 0, ""]
+      ].map(([room_id, room_no, floor, tenant_name, phone, status, base_rent, common_fee, parking_fee, internet_fee, other_fee, note]) => ({
+        room_id,
+        room_no,
+        floor,
+        tenant_name,
+        phone,
+        status,
+        base_rent,
+        common_fee,
+        parking_fee,
+        internet_fee,
+        other_fee,
+        note,
+        created_at: now,
+        updated_at: now
+      }));
+
+      const tenants = rooms.filter((room) => room.tenant_name).map((room, index) => ({
+        tenant_id: "T" + (index + 1),
+        room_id: room.room_id,
+        name: room.tenant_name,
+        phone: room.phone,
+        start_date: month + "-01",
+        end_date: "",
+        status: "active",
+        created_at: now,
+        updated_at: now
+      }));
+
+      const meters = [
+        {
+          meter_id: "M1",
+          billing_month: month,
+          room_id: "R101",
+          room_no: "101",
+          water_prev: 120,
+          water_current: 125,
+          water_unit: 5,
+          water_rate: 18,
+          water_amount: 90,
+          electric_prev: 850,
+          electric_current: 900,
+          electric_unit: 50,
+          electric_rate: 8,
+          electric_amount: 400,
+          recorded_at: now,
+          updated_at: now,
+          note: ""
+        },
+        {
+          meter_id: "M2",
+          billing_month: month,
+          room_id: "R201",
+          room_no: "201",
+          water_prev: 200,
+          water_current: 208,
+          water_unit: 8,
+          water_rate: 18,
+          water_amount: 144,
+          electric_prev: 1000,
+          electric_current: 1062,
+          electric_unit: 62,
+          electric_rate: 8,
+          electric_amount: 496,
+          recorded_at: now,
+          updated_at: now,
+          note: ""
+        }
+      ];
+
+      const customCharges = [
+        {
+          charge_id: "C1",
+          room_id: "R202",
+          room_no: "202",
+          billing_month: month,
+          name: "ค่าทำความสะอาด",
+          amount: 150,
+          type: "one_time",
+          active: "TRUE",
+          created_at: now,
+          updated_at: now
+        }
+      ];
+
+      const invoices = [
+        {
+          invoice_id: "I1",
+          invoice_no: `INV-${month.replace("-", "")}-101`,
+          billing_month: month,
+          room_id: "R101",
+          room_no: "101",
+          tenant_id: "T1",
+          tenant_name: "สมชาย ใจดี",
+          rent_amount: 3500,
+          common_fee: 300,
+          parking_fee: 0,
+          internet_fee: 250,
+          other_fee: 0,
+          water_amount: 90,
+          electric_amount: 400,
+          custom_amount: 0,
+          total_amount: 4540,
+          paid_amount: 0,
+          status: "unpaid",
+          created_at: now,
+          paid_at: "",
+          updated_at: now,
+          note: ""
+        },
+        {
+          invoice_id: "I2",
+          invoice_no: `INV-${month.replace("-", "")}-201`,
+          billing_month: month,
+          room_id: "R201",
+          room_no: "201",
+          tenant_id: "T2",
+          tenant_name: "มาลี รักดี",
+          rent_amount: 4000,
+          common_fee: 300,
+          parking_fee: 500,
+          internet_fee: 250,
+          other_fee: 0,
+          water_amount: 144,
+          electric_amount: 496,
+          custom_amount: 0,
+          total_amount: 5690,
+          paid_amount: 5690,
+          status: "paid",
+          created_at: now,
+          paid_at: now,
+          updated_at: now,
+          note: ""
+        }
+      ];
+
+      const payments = [
+        {
+          payment_id: "P1",
+          invoice_id: "I2",
+          invoice_no: `INV-${month.replace("-", "")}-201`,
+          room_id: "R201",
+          room_no: "201",
+          tenant_name: "มาลี รักดี",
+          paid_amount: 5690,
+          method: "cash",
+          slip_base64: "",
+          slip_name: "",
+          paid_at: now,
+          received_by: "admin",
+          note: "",
+          created_at: now
+        }
+      ];
+
+      const logs = [
+        { log_id: "L1", action: "SAVE_PAYMENT", ref_type: "invoice", ref_id: "I2", detail: "ห้อง 201 ชำระเงินเรียบร้อยแล้ว", created_at: now, user: "admin" },
+        { log_id: "L2", action: "GENERATE_INVOICES", ref_type: "invoice", ref_id: month, detail: `สร้างใบแจ้งหนี้รอบเดือน ${month}`, created_at: now, user: "admin" },
+        { log_id: "L3", action: "SAVE_METER_READING", ref_type: "meter", ref_id: "M1", detail: "บันทึกมิเตอร์ห้อง 101", created_at: now, user: "admin" }
+      ];
+
+      return { settings, rooms, tenants, meters, invoices, payments, customCharges, logs };
+    }
+  </script>
+</body>
+</html>
