@@ -334,6 +334,7 @@
     .form-grid {
       display: grid;
       gap: 14px;
+      min-width: 0;
     }
 
     .form-grid.cols-2 {
@@ -343,6 +344,7 @@
     label.field {
       display: grid;
       gap: 8px;
+      min-width: 0;
       color: var(--muted);
       font-size: 0.94rem;
     }
@@ -351,6 +353,9 @@
     .field select,
     .field textarea {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
       border-radius: 16px;
       border: 1px solid var(--panel-line);
       background: #fff;
@@ -358,6 +363,12 @@
       padding: 14px 16px;
       outline: none;
       min-height: 52px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .field input[type="number"] {
+      text-align: right;
+      appearance: textfield;
     }
 
     .field textarea {
@@ -506,7 +517,10 @@
 
     .meter-value {
       min-height: 86px;
-      font-size: clamp(2.1rem, 8vw, 4rem);
+      max-width: 100%;
+      font-size: clamp(1.7rem, 6vw, 3.4rem);
+      line-height: 1.15;
+      overflow: hidden;
       text-align: center;
       font-weight: 800;
     }
@@ -739,6 +753,26 @@
       border-radius: 20px;
       border: 1px solid var(--panel-line);
       background: #f7f9ff;
+    }
+
+    .bill-note-box {
+      margin-top: 18px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #f8fbff;
+      border: 1px solid #dbe7ff;
+      color: var(--primary-strong);
+      line-height: 1.6;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .payment-slip-view {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--panel-line);
+      background: #f8fbff;
     }
 
     .sticky-actions {
@@ -991,6 +1025,9 @@
         <span class="material-symbols-outlined">calendar_month</span>
         ${formatThaiMonth(state.page === "meters" ? state.meter.month : state.invoices.month)}
       `;
+      if (!isMockMode()) {
+        document.getElementById("headerMode").textContent = "เชื่อมต่อฐานข้อมูลแล้ว";
+      }
 
       const fab = document.getElementById("fabButton");
       fab.hidden = !["rooms", "meters", "invoices"].includes(state.page);
@@ -1183,6 +1220,13 @@
         settings: renderSettings
       };
       root.innerHTML = renderers[state.page]();
+      postRenderPage();
+    }
+
+    function postRenderPage() {
+      if (state.page === "settings") {
+        enhanceSettingsPage();
+      }
     }
 
     function renderDashboard() {
@@ -1496,7 +1540,7 @@
         <section class="page-head">
           <div>
             <h1 class="page-title">ตั้งค่าระบบ</h1>
-            <div class="subtle">เชื่อมต่อ Google Sheets ตั้งค่าอัตราค่าน้ำ/ไฟ และข้อมูลธนาคาร</div>
+            <div class="subtle">เชื่อมต่อฐานข้อมูล ตั้งค่าอัตราค่าน้ำ/ไฟ และข้อมูลธนาคาร</div>
           </div>
         </section>
 
@@ -1552,6 +1596,48 @@
           </div>
         </section>
       `;
+    }
+
+    function enhanceSettingsPage() {
+      const settingsGrid = document.querySelector(".settings-grid");
+      if (!settingsGrid || document.getElementById("settingInvoicePrefix")) {
+        return;
+      }
+
+      const invoicePanel = document.createElement("div");
+      invoicePanel.className = "panel panel-block";
+      invoicePanel.innerHTML = `
+        <div class="panel-title"><h3>รูปแบบใบแจ้งหนี้</h3></div>
+        <div class="form-grid">
+          <label class="field"><span>Invoice Prefix</span><input id="settingInvoicePrefix" value="${escapeHtml(state.settings.invoice_prefix || "INV")}"></label>
+          <label class="field"><span>ชื่อรายการค่าใช้จ่ายเพิ่มเติม</span><input id="settingInvoiceExtraLabel" value="${escapeHtml(state.settings.invoice_extra_label || "ค่าใช้จ่ายเพิ่มเติม")}"></label>
+          <label class="field"><span>หมายเหตุท้ายบิล / กฎการเช่า</span><textarea id="settingInvoiceFooterNote" placeholder="เช่น ออกก่อน 6 เดือนไม่คืนเงินมัดจำ">${escapeHtml(state.settings.invoice_footer_note || "")}</textarea></label>
+        </div>
+      `;
+
+      const connectionPanel = document.getElementById("settingScriptUrl")?.closest(".panel");
+      if (connectionPanel) {
+        settingsGrid.insertBefore(invoicePanel, connectionPanel);
+      } else {
+        settingsGrid.appendChild(invoicePanel);
+      }
+
+      const authPasswordField = document.getElementById("settingAdminPassword")?.closest("label.field");
+      if (authPasswordField && !document.getElementById("settingAllowedCredentials")) {
+        authPasswordField.insertAdjacentHTML("afterend", `
+          <label class="field">
+            <span>บัญชีผู้ใช้เพิ่มเติม</span>
+            <textarea id="settingAllowedCredentials" placeholder="manager,1234&#10;staff,5678">${escapeHtml(state.settings.allowed_credentials || "")}</textarea>
+          </label>
+          <label class="field">
+            <span>วิธีรับชำระเริ่มต้น</span>
+            <select id="settingPaymentDefaultMethod">
+              <option value="transfer" ${String(state.settings.payment_default_method || "transfer") === "transfer" ? "selected" : ""}>สแกนจ่าย / QR Code ขึ้นก่อน</option>
+              <option value="cash" ${String(state.settings.payment_default_method || "") === "cash" ? "selected" : ""}>เงินสดขึ้นก่อน</option>
+            </select>
+          </label>
+        `);
+      }
     }
 
     function summaryCard(label, value, foot, extraStyle = "") {
@@ -2028,6 +2114,58 @@
       mockHandlers.LOGIN(auth);
     }
 
+    function parseCredentialRows(text) {
+      return String(text || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const commaIndex = line.indexOf(",");
+          const pipeIndex = line.indexOf("|");
+          const splitIndex = commaIndex >= 0 ? commaIndex : pipeIndex;
+          if (splitIndex < 0) return null;
+          const username = line.slice(0, splitIndex).trim();
+          const password = line.slice(splitIndex + 1).trim();
+          return username && password ? { username, password } : null;
+        })
+        .filter(Boolean);
+    }
+
+    function getMockCredentials() {
+      const settingsMap = objectFromSettings(mockDb.settings);
+      return [
+        { username: settingsMap.admin_user || "admin", password: settingsMap.admin_password || "admin1234" },
+        ...parseCredentialRows(settingsMap.allowed_credentials)
+      ];
+    }
+
+    function credentialMatches(auth) {
+      const username = String(auth?.username || auth?.user || "").trim();
+      const password = String(auth?.password || auth?.pass || "");
+      return getMockCredentials().some((item) => item.username === username && item.password === password);
+    }
+
+    mockHandlers.LOGIN = function(payload) {
+      if (!credentialMatches(payload)) {
+        throw new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      }
+      return { ok: true, user: payload.username };
+    };
+
+    mockHandlers.GET_INVOICE_DETAIL = function(payload) {
+      const invoice = mockDb.invoices.find((item) => item.invoice_id === payload.invoiceId);
+      if (!invoice) throw new Error("ไม่พบใบแจ้งหนี้");
+      const payments = mockDb.payments.filter((item) => item.invoice_id === invoice.invoice_id);
+      return { ...invoice, payments: deepClone(payments) };
+    };
+
+    function authenticateMock(auth) {
+      if (!auth) throw new Error("ยังไม่ได้เข้าสู่ระบบ");
+      if (!credentialMatches(auth)) {
+        throw new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      }
+    }
+
     async function applyRoomFilters() {
       state.rooms.query = valueOf("roomSearchInput");
       state.rooms.status = valueOf("roomStatusFilter");
@@ -2498,6 +2636,11 @@
         bank_account_name: valueOf("settingBankAccountName"),
         bank_account_no: valueOf("settingBankAccountNo"),
         promptpay_id: valueOf("settingPromptPay"),
+        invoice_prefix: valueOf("settingInvoicePrefix") || "INV",
+        invoice_extra_label: valueOf("settingInvoiceExtraLabel") || "ค่าใช้จ่ายเพิ่มเติม",
+        invoice_footer_note: valueOf("settingInvoiceFooterNote"),
+        allowed_credentials: valueOf("settingAllowedCredentials"),
+        payment_default_method: valueOf("settingPaymentDefaultMethod") || "transfer",
         admin_user: valueOf("settingAdminUser"),
         admin_password: valueOf("settingAdminPassword")
       };
@@ -2522,6 +2665,263 @@
       renderShell();
       showToast("บันทึกการตั้งค่าแล้ว", "success");
       renderPage();
+    }
+
+    function getPreferredPaymentMethod() {
+      return String(state.settings?.payment_default_method || "transfer") === "cash" ? "cash" : "transfer";
+    }
+
+    function nl2brHtml(value) {
+      return escapeHtml(value || "").replace(/\r?\n/g, "<br>");
+    }
+
+    async function saveMeter(nextRoom) {
+      const prev = state.meter.previous || {};
+      const room = state.meter.rooms.find((item) => item.room_id === state.meter.roomId);
+      if (!room) {
+        showToast("กรุณาเลือกห้อง", "error");
+        return;
+      }
+
+      const waterCurrent = state.meter.mode === "electric"
+        ? Number(prev.water_current !== "" && prev.water_current !== undefined ? prev.water_current : (prev.water_prev || 0))
+        : Number(valueOf("waterCurrentInput") || prev.water_prev || 0);
+      const electricCurrent = state.meter.mode === "water"
+        ? Number(prev.electric_current !== "" && prev.electric_current !== undefined ? prev.electric_current : (prev.electric_prev || 0))
+        : Number(valueOf("electricCurrentInput") || prev.electric_prev || 0);
+
+      if (state.meter.mode !== "electric" && Number(waterCurrent) < Number(prev.water_prev || 0)) {
+        showToast("เลขมิเตอร์น้ำต่ำกว่าครั้งก่อน", "error");
+        return;
+      }
+      if (state.meter.mode !== "water" && Number(electricCurrent) < Number(prev.electric_prev || 0)) {
+        showToast("เลขมิเตอร์ไฟต่ำกว่าครั้งก่อน", "error");
+        return;
+      }
+
+      const currentRoomId = state.meter.roomId;
+      const currentRoomIndex = state.meter.rooms.findIndex((item) => item.room_id === state.meter.roomId);
+      const upcomingRoom = nextRoom ? state.meter.rooms[currentRoomIndex + 1] : null;
+      const payload = {
+        billingMonth: state.meter.month,
+        roomId: state.meter.roomId,
+        roomNo: room.room_no,
+        waterPrev: prev.water_prev || 0,
+        waterCurrent: waterCurrent || 0,
+        electricPrev: prev.electric_prev || 0,
+        electricCurrent: electricCurrent || 0,
+        waterRate: prev.water_rate || state.settings.water_rate || 18,
+        electricRate: prev.electric_rate || state.settings.electric_rate || 8
+      };
+
+      const savePromise = api("SAVE_METER_READING", payload);
+
+      if (upcomingRoom) {
+        state.meter.roomId = upcomingRoom.room_id;
+        state.meter.previous = null;
+        renderPage();
+        api("GET_PREVIOUS_METER", {
+          billingMonth: state.meter.month,
+          roomId: upcomingRoom.room_id
+        }).then((previousMeter) => {
+          if (state.meter.roomId === upcomingRoom.room_id) {
+            state.meter.previous = previousMeter;
+            renderPage();
+          }
+        }).catch(() => {});
+      }
+
+      savePromise.then(async () => {
+        showToast("บันทึกมิเตอร์แล้ว", "success", 1500);
+        await loadMeters();
+        if (upcomingRoom && state.meter.roomId === upcomingRoom.room_id) {
+          state.meter.previous = await api("GET_PREVIOUS_METER", {
+            billingMonth: state.meter.month,
+            roomId: upcomingRoom.room_id
+          });
+        } else if (!upcomingRoom && state.meter.roomId === currentRoomId) {
+          state.meter.previous = await api("GET_PREVIOUS_METER", {
+            billingMonth: state.meter.month,
+            roomId: currentRoomId
+          });
+        }
+        renderPage();
+      }).catch((error) => {
+        showToast(error.message || "บันทึกมิเตอร์ไม่สำเร็จ", "error");
+      });
+
+      if (!upcomingRoom) {
+        renderPage();
+      }
+    }
+
+    async function openInvoiceDetail(invoiceId) {
+      const invoice = await api("GET_INVOICE_DETAIL", { invoiceId });
+      const extraLabel = escapeHtml(state.settings.invoice_extra_label || "ค่าใช้จ่ายเพิ่มเติม");
+      const footerNote = String(state.settings.invoice_footer_note || "").trim();
+      openModal({
+        title: `ใบแจ้งหนี้ ${invoice.invoice_no}`,
+        content: `
+          <div class="panel panel-block" style="box-shadow:none;">
+            <div class="panel-title">
+              <div>
+                <h3 style="margin:0;">${escapeHtml(state.settings.dorm_name || "Easy Rent Bill")}</h3>
+                <div class="subtle">${escapeHtml(invoice.billing_month)} • ห้อง ${escapeHtml(invoice.room_no)}</div>
+              </div>
+              <div class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</div>
+            </div>
+            <div class="kv"><div>ผู้เช่า</div><strong>${escapeHtml(invoice.tenant_name || "-")}</strong></div>
+            <div class="kv"><div>ค่าเช่า</div><strong>${money(invoice.rent_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าน้ำ</div><strong>${money(invoice.water_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าไฟ</div><strong>${money(invoice.electric_amount || 0)}</strong></div>
+            <div class="kv"><div>ค่าส่วนกลาง + ค่าอื่น</div><strong>${money((invoice.common_fee || 0) + (invoice.parking_fee || 0) + (invoice.internet_fee || 0) + (invoice.other_fee || 0))}</strong></div>
+            <div class="kv"><div>${extraLabel}</div><strong>${money(invoice.custom_amount || 0)}</strong></div>
+            <div class="kv"><div>ยอดรวม</div><strong style="font-size:1.4rem;">${money(invoice.total_amount || 0)}</strong></div>
+            ${footerNote ? `<div class="bill-note-box"><strong>หมายเหตุ</strong><div style="margin-top:8px;">${nl2brHtml(footerNote)}</div></div>` : ""}
+            ${invoice.payments?.length ? `
+              <div class="panel-title" style="margin-top:20px;"><h3>ประวัติชำระเงิน</h3></div>
+              ${invoice.payments.map((payment) => `
+                <div class="list-item" style="margin-bottom:10px;">
+                  <div><strong>${money(payment.paid_amount || 0)}</strong> • ${payment.method === "cash" ? "เงินสด" : "สแกนจ่าย / QR Code"}</div>
+                  <div class="subtle">${escapeHtml(payment.paid_at || "")} • ${escapeHtml(payment.received_by || "-")}</div>
+                  ${payment.note ? `<div class="subtle" style="margin-top:6px;">${escapeHtml(payment.note)}</div>` : ""}
+                  ${payment.slip_base64 ? `
+                    <div class="payment-slip-view">
+                      <div class="helper" style="margin-bottom:8px;">หลักฐานการชำระเงิน ${escapeHtml(payment.slip_name || "")}</div>
+                      <img class="slip-preview" src="${payment.slip_base64}" alt="${escapeHtml(payment.slip_name || "payment slip")}">
+                    </div>
+                  ` : ""}
+                </div>
+              `).join("")}
+            ` : ""}
+            <div class="actions" style="margin-top:18px;">
+              <button class="btn btn-primary" type="button" ${invoice.status === "paid" ? "disabled" : ""} onclick="closeModal(); openPaymentModal('${invoice.invoice_id}')">รับชำระเงิน</button>
+              <button class="btn btn-outline" type="button" onclick="shareInvoice('${invoice.invoice_id}')">แชร์/พิมพ์</button>
+            </div>
+          </div>
+        `
+      });
+    }
+
+    async function openPaymentModal(invoiceId) {
+      const invoice = await api("GET_INVOICE_DETAIL", { invoiceId });
+      const qrBank = escapeHtml(state.settings.bank_name || "ธนาคาร");
+      const qrName = escapeHtml(state.settings.bank_account_name || "-");
+      const qrNo = escapeHtml(state.settings.bank_account_no || "-");
+      const promptPay = escapeHtml(state.settings.promptpay_id || "-");
+
+      openModal({
+        title: "รับชำระเงิน",
+        content: `
+          <div class="panel panel-block" style="box-shadow:none;">
+            <div class="panel-title">
+              <div>
+                <h3 style="margin:0;">ห้อง ${escapeHtml(invoice.room_no)}</h3>
+                <div class="subtle">${escapeHtml(invoice.tenant_name || "-")}</div>
+              </div>
+              <div class="badge ${invoice.status}">${invoiceStatusLabel(invoice.status)}</div>
+            </div>
+            <div class="kv"><div>ยอดรวมที่ต้องชำระ</div><strong style="font-size:2rem; color:var(--primary);">${money(invoice.total_amount || 0)}</strong></div>
+            <div class="segmented" style="margin:18px 0;">
+              <button id="cashTabBtn" class="segment-btn active" type="button" onclick="switchPaymentTab('cash')">เงินสด (Cash)</button>
+              <button id="transferTabBtn" class="segment-btn" type="button" onclick="switchPaymentTab('transfer')">สแกนจ่าย / QR Code</button>
+            </div>
+
+            <form id="paymentForm" class="form-grid">
+              <input type="hidden" name="invoice_id" value="${escapeHtml(invoice.invoice_id)}">
+              <input type="hidden" name="method" id="paymentMethodInput" value="cash">
+              <div id="cashSection">
+                <div class="form-grid cols-2">
+                  <label class="field"><span>ยอดที่รับ</span><input name="paid_amount" type="number" value="${escapeHtml(invoice.total_amount || 0)}" required></label>
+                  <label class="field"><span>วันที่รับชำระ</span><input name="paid_at" value="${escapeHtml(stamp())}" required></label>
+                  <label class="field"><span>ผู้รับเงิน</span><input name="received_by" value="${escapeHtml(state.auth?.username || "admin")}"></label>
+                  <label class="field"><span>หมายเหตุ</span><input name="note" placeholder="เช่น ชำระครบ"></label>
+                </div>
+              </div>
+
+              <div id="transferSection" style="display:none;">
+                <div class="panel panel-block" style="background:#f9fbff; margin-bottom:14px;">
+                  <div style="display:grid; place-items:center; min-height:240px; border:1px dashed var(--panel-line); border-radius:22px; background:#fff;">
+                    <div style="text-align:center;">
+                      <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary);">qr_code_2</span>
+                      <div style="font-weight:700; margin-top:8px;">${qrBank}</div>
+                      <div class="subtle">${qrName}</div>
+                      <div style="margin-top:8px; font-size:1.3rem; font-weight:800;">${qrNo}</div>
+                      <div class="subtle">พร้อมเพย์ ${promptPay}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid cols-2">
+                  <label class="field"><span>ยอดที่โอน</span><input name="paid_amount_transfer" type="number" value="${escapeHtml(invoice.total_amount || 0)}"></label>
+                  <label class="field"><span>ชื่อผู้ตรวจรับ</span><input name="received_by_transfer" value="${escapeHtml(state.auth?.username || "admin")}"></label>
+                  <label class="field"><span>วันที่รับชำระ</span><input name="paid_at_transfer" value="${escapeHtml(stamp())}"></label>
+                  <label class="field"><span>หมายเหตุ</span><input name="note_transfer" placeholder="เช่น แนบสลิปแล้ว"></label>
+                  <label class="field" style="grid-column:1/-1;">
+                    <span>แนบหลักฐานการโอน / ถ่ายรูปสลิป</span>
+                    <input id="slipInput" type="file" accept="image/*" capture="environment">
+                  </label>
+                  <input type="hidden" name="slip_base64" id="slipBase64Input">
+                  <input type="hidden" name="slip_name" id="slipNameInput">
+                  <div id="slipPreviewWrap" style="grid-column:1/-1; display:none;">
+                    <img id="slipPreview" class="slip-preview" alt="Slip preview">
+                    <div class="helper" style="margin-top:8px;">ระบบจะย่อภาพให้สูงสุด 512px ก่อนเก็บเป็น Base64 ลงชีต</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sticky-actions">
+                <button class="btn btn-primary" type="submit" style="width:100%;">ยืนยันการชำระเงิน</button>
+              </div>
+            </form>
+          </div>
+        `
+      });
+
+      const preferredMethod = getPreferredPaymentMethod();
+      const segmentWrap = document.querySelector(".segmented");
+      const cashButton = document.getElementById("cashTabBtn");
+      const transferButton = document.getElementById("transferTabBtn");
+      if (segmentWrap && cashButton && transferButton) {
+        segmentWrap.innerHTML = "";
+        if (preferredMethod === "transfer") {
+          segmentWrap.appendChild(transferButton);
+          segmentWrap.appendChild(cashButton);
+        } else {
+          segmentWrap.appendChild(cashButton);
+          segmentWrap.appendChild(transferButton);
+        }
+      }
+      switchPaymentTab(preferredMethod);
+
+      document.getElementById("slipInput").addEventListener("change", handleSlipSelected);
+      document.getElementById("paymentForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const method = valueOf("paymentMethodInput");
+        const payload = {
+          invoice_id: form.get("invoice_id")
+        };
+        if (method === "cash") {
+          payload.method = "cash";
+          payload.paid_amount = Number(form.get("paid_amount") || 0);
+          payload.paid_at = String(form.get("paid_at") || "");
+          payload.received_by = String(form.get("received_by") || "");
+          payload.note = String(form.get("note") || "");
+        } else {
+          payload.method = "transfer";
+          payload.paid_amount = Number(form.get("paid_amount_transfer") || 0);
+          payload.paid_at = String(form.get("paid_at_transfer") || "");
+          payload.received_by = String(form.get("received_by_transfer") || "");
+          payload.note = String(form.get("note_transfer") || "");
+          payload.slip_base64 = String(form.get("slip_base64") || "");
+          payload.slip_name = String(form.get("slip_name") || "");
+        }
+        await api("SAVE_PAYMENT", payload);
+        closeModal();
+        showToast("บันทึกการชำระเงินแล้ว", "success");
+        await Promise.all([loadInvoices(), loadDashboard()]);
+        renderPage();
+      };
     }
 
     async function testConnection() {
@@ -2578,7 +2978,7 @@
       root.innerHTML = "";
     }
 
-    function showToast(message, type = "info") {
+    function showToast(message, type = "info", duration = 3000) {
       const root = document.getElementById("toastRoot");
       const id = "toast-" + Date.now();
       const el = document.createElement("div");
@@ -2586,7 +2986,7 @@
       el.id = id;
       el.textContent = message;
       root.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
+      setTimeout(() => el.remove(), duration);
     }
 
     function currentMonth() {
@@ -2834,8 +3234,9 @@
       const otherFee = Number(room.other_fee || 0);
       const waterAmount = Number(meter.water_amount || 0);
       const electricAmount = Number(meter.electric_amount || 0);
+      const invoicePrefix = settingValue("invoice_prefix", "INV");
       return {
-        invoice_no: `INV-${month.replace("-", "")}-${room.room_no}`,
+        invoice_no: `${invoicePrefix}-${month.replace("-", "")}-${room.room_no}`,
         billing_month: month,
         room_id: room.room_id,
         room_no: room.room_no,
@@ -2884,6 +3285,11 @@
         ["bank_account_name", "หอพักใจดี"],
         ["bank_account_no", "012-3-45678-9"],
         ["promptpay_id", "0812345678"],
+        ["invoice_prefix", "INV"],
+        ["invoice_extra_label", "ค่าใช้จ่ายเพิ่มเติม"],
+        ["invoice_footer_note", ""],
+        ["allowed_credentials", ""],
+        ["payment_default_method", "transfer"],
         ["admin_user", "admin"],
         ["admin_password", "admin1234"]
       ].map(([key, value]) => ({ key, value, note: "", updated_at: now }));

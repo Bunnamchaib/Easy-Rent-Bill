@@ -15,7 +15,7 @@ var PUBLIC_ACTIONS = {
   INIT_DATABASE: true
 };
 
-var APP_VERSION = "2026-06-04 19:40";
+var APP_VERSION = "2026-06-05 11:10";
 
 function doGet() {
   return jsonResponse({
@@ -154,7 +154,7 @@ function login_(payload) {
   if (!username || !password) {
     throw new Error("Missing username or password");
   }
-  if (username !== String(settings.admin_user || "admin") || password !== String(settings.admin_password || "admin1234")) {
+  if (!isAuthorizedCredential_(username, password, settings)) {
     throw new Error("Invalid username or password");
   }
   return { ok: true, user: username };
@@ -164,7 +164,7 @@ function authorize_(auth) {
   var settings = getSettingsMap_();
   var username = String(auth.username || auth.user || "");
   var password = String(auth.password || auth.pass || "");
-  if (username !== String(settings.admin_user || "admin") || password !== String(settings.admin_password || "admin1234")) {
+  if (!isAuthorizedCredential_(username, password, settings)) {
     throw new Error("Unauthorized");
   }
 }
@@ -494,7 +494,7 @@ function getInvoices(payload) {
 function getInvoiceDetail(payload) {
   var invoiceId = String(payload.invoiceId || payload.invoice_id || "");
   var invoice = requireById_(readSheetObjects_("Invoices"), "invoice_id", invoiceId, "Invoice not found");
-  var payments = readSheetObjectsSelective_("Payments", ["payment_id", "invoice_id", "invoice_no", "room_no", "tenant_name", "paid_amount", "method", "slip_name", "paid_at", "received_by", "note", "created_at"]).filter(function(item) {
+  var payments = readSheetObjects_("Payments").filter(function(item) {
     return item.invoice_id === invoiceId;
   });
   return mergeObjects_(invoice, { payments: payments });
@@ -593,6 +593,10 @@ function seedSettings_() {
     settingRow_("bank_account_no", "012-3-45678-9", "Account number"),
     settingRow_("promptpay_id", "0812345678", "PromptPay ID"),
     settingRow_("invoice_prefix", "INV", "Invoice prefix"),
+    settingRow_("invoice_extra_label", "ค่าใช้จ่ายเพิ่มเติม", "Label for custom charge line"),
+    settingRow_("invoice_footer_note", "", "Invoice footer note / policy"),
+    settingRow_("allowed_credentials", "", "One username,password per line"),
+    settingRow_("payment_default_method", "transfer", "Default payment method tab"),
     settingRow_("admin_user", "admin", "Default admin user"),
     settingRow_("admin_password", "admin1234", "Default admin password")
   ]);
@@ -1115,4 +1119,39 @@ function getAppTimeZone_() {
   } catch (error) {
     return Session.getScriptTimeZone() || "Asia/Bangkok";
   }
+}
+
+function isAuthorizedCredential_(username, password, settings) {
+  return listAuthorizedCredentials_(settings).some(function(item) {
+    return item.username === username && item.password === password;
+  });
+}
+
+function listAuthorizedCredentials_(settings) {
+  var credentials = [{
+    username: String(settings.admin_user || "admin").trim(),
+    password: String(settings.admin_password || "admin1234")
+  }];
+  return credentials.concat(parseCredentialRows_(settings.allowed_credentials));
+}
+
+function parseCredentialRows_(rawText) {
+  return String(rawText || "").split(/\r?\n/).map(function(line) {
+    var text = String(line || "").trim();
+    if (!text) return null;
+    var delimiterIndex = text.indexOf(",");
+    if (delimiterIndex < 0) {
+      delimiterIndex = text.indexOf("|");
+    }
+    if (delimiterIndex < 0) return null;
+    var username = text.slice(0, delimiterIndex).trim();
+    var password = text.slice(delimiterIndex + 1).trim();
+    if (!username || !password) return null;
+    return {
+      username: username,
+      password: password
+    };
+  }).filter(function(item) {
+    return item !== null;
+  });
 }

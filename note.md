@@ -38,3 +38,10 @@
 - Fix: added month normalization plus timezone-safe handling in `code.gs`, verified deploy with `PING version=2026-06-04 19:40`, then confirmed `GET_INVOICES` returned 3 rows for `2026-06`.
 - Test: local app at `http://127.0.0.1:4173/index.html` loaded successfully, dashboard showed revenue `15,130`, paid `5,690`, unpaid `9,440`, and invoices page showed 3 bills.
 - Next: push code to GitHub and later clean up garbled sample Thai text in seeded demo data if needed.
+
+## 2026-06-05 08:42:13
+- Did: ran `backup.py` first, then updated `index.html` + `code.gs` for editable bill format settings, multi-credential login support, default payment method selection, invoice detail note/slip rendering, async meter save-next-room flow, and tighter numeric input layout.
+- Problem: the live Apps Script URL currently used by the app still answers `PING version=2026-06-04 19:40`, so backend-only changes from the local `code.gs` are not live yet. That means extra credentials and slip image data on real invoice detail still need the correct Easy Rent Bill Apps Script project to be pasted/deployed.
+- Fix: finished the local code changes, verified syntax (`INDEX_HTML_SCRIPT_OK`, `CODE_GS_OK`), confirmed direct API calls for `LOGIN`, `GET_SETTINGS`, `GET_INVOICES`, `GET_LOGS`, and `GET_METER_PROGRESS`, and aligned visible wording to `เชื่อมต่อฐานข้อมูลแล้ว`.
+- Test: settings page showed the new fields, invoice detail showed the new custom-charge label path, and direct backend calls returned valid data. Browser testing later got stuck on the loading state after repeated navigation, so final live verification of the new meter flow and live slip image display still depends on deploying the updated `code.gs` to the correct bound script.
+- Next: commit/push this repo update, then deploy the local `code.gs` to the real Easy Rent Bill Apps Script so the live web app uses the new backend behavior too.
